@@ -1,0 +1,138 @@
+---
+title: "Data 622 Homework 1"
+author: "Sung Lee"
+date: '2022-03-07'
+output: 
+  html_document:
+    code_folding: show
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    smooth_scroll: false
+    toc_depth: 3
+number_sections: true
+theme: paper
+---
+
+# Introduction  
+
+This assignment is the first homework for Data 622. The following is the assignment:
+
+Visit the following website and explore the range of sizes of this dataset (from 100 to 5 million records). [https://eforexcel.com/wp/downloads-18-sample-csv-files-data-sets-for-testing-sales/](https://eforexcel.com/wp/downloads-18-sample-csv-files-data-sets-for-testing-sales/)  
+
+Based on your computer's capabilities (memory, CPU), select 2 files you can handle (recommended one small, one large)
+Review the structure and content of the tables, and think which two machine learning algorithms presented so far could be used to analyze the data, and how can they be applied in the suggested environment of the datasets.  
+
+Write a short essay explaining your selection. Then, select one of the 2 algorithms and explore how to analyze and predict an outcome based on the data available. This will be an exploratory exercise, so feel free to show errors and warnings that raise during the analysis. Test the code with both datasets selected and compare the results. Which result will you trust if you need to make a business decision? Do you think an analysis could be prone to errors when using too much data, or when using the least amount possible?
+Develop your exploratory analysis of the data and the essay in the following 2 weeks. You'll have until March 17 to submit both.
+
+
+# Data Exploration  
+
+I decided to select the 1000 Sales Records and the 100,000 Sales Records files on the site.
+
+
+## Setup  
+
+The following code is an initial setup of libraries and loading of the files. I kept the files in zip format and relied upon the `tidyverse` library to unzip the files because I would be storing these files on GitHub.
+
+```{r, warning=FALSE, error=FALSE}
+# Load libraries
+library(tidymodels)
+library(tidyverse)
+library(caret)
+library(rpart.plot)
+
+
+# Load the 1000 sales file
+ksales <- read_csv('https://github.com/logicalschema/spring2022/raw/main/data622/hw1/1000-Sales-Records.zip')
+
+```  
+
+
+```{r, eval=FALSE}
+
+# Names of columns
+names(ksales)
+
+# Convert date columns to date datatypes
+ksales[['Order Date']] <- as.Date(ksales[['Order Date']], "%m/%d/%Y")
+ksales[['Ship Date']] <- as.Date(ksales[['Ship Date']], "%m/%d/%Y")
+ksales[['Order ID']] <- toString(ksales[['Order ID']])
+ksales[['Sales Channel']] <- as.factor(ksales[['Sales Channel']])
+
+# Snippet of the data
+head(ksales)
+
+# glimpse of data
+glimpse(ksales)
+
+summary(ksales)
+
+
+
+```
+
+
+```{r, eval=FALSE}
+# Splitting the data 80/20
+set.seed(3822)
+
+training.samples <- ksales$`Sales Channel` %>% 
+  createDataPartition(p = 0.8, list=FALSE)
+
+train.data <- ksales[training.samples,]
+test.data <- ksales[-training.samples,]
+
+tree_spec <- decision_tree() %>% 
+  # Set the engine and mode
+  set_engine("rpart") %>%
+  set_mode("classification")
+  
+# Train the model
+tree_model <- tree_spec %>%
+  fit(formula = `Sales Channel` ~ `Region` + `Item Type` + `Order Priority` + `Total Profit`,
+      data = train.data)
+
+
+# Information about the model
+tree_model
+
+# Visualization of the model
+tree_model$fit %>% rpart.plot(type = 4, extra = 2, roundint=FALSE)
+
+
+```
+
+
+
+
+```{r, eval=FALSE}
+
+# Generate the predictions using the test data
+predictions <- predict(tree_model, new_data = test.data)
+
+# Generate a side-by-side of 
+predictions_combined <- predictions %>% 
+  mutate(true_classification = test.data$`Sales Channel`)
+
+head(predictions_combined)
+
+# The confusion matrix
+confusion_matrix <- conf_mat(data = predictions_combined,
+                            estimate = .pred_class,
+                            truth = true_classification)
+
+# Calculate the number of correctly predicted classes
+correct_predictions <- 49 + 54
+
+# Calculate the number of all predicted classes
+all_predictions <- 49 + 54 + 41 + 67
+
+# Calculate and print the accuracy
+acc_manual <- correct_predictions / all_predictions
+acc_manual
+
+
+```
