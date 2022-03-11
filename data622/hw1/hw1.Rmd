@@ -35,7 +35,7 @@ I decided to select the 1000 Sales Records and the 100,000 Sales Records files o
 
 ## Setup  
 
-The following code is an initial setup of libraries and loading of the files. I kept the files in zip format and relied upon the `tidyverse` library to unzip the files because I would be storing these files on GitHub.
+The following code is an initial setup of libraries and loading of the files. I kept the files in csv.gz format and relied upon the `tidyverse` library to unzip the files with the `read_csv` function because I would be storing these files on GitHub.
 
 ```{r, warning=FALSE, error=FALSE}
 # Load libraries
@@ -46,15 +46,19 @@ library(rpart.plot)
 
 
 # Load the 1000 sales file
-ksales <- read_csv('https://github.com/logicalschema/spring2022/raw/main/data622/hw1/1000-Sales-Records.zip')
+ksales <- read_csv('https://github.com/logicalschema/spring2022/raw/main/data622/hw1/1000_Sales_Records.csv.gz')
+bigksales <- read_csv('https://github.com/logicalschema/spring2022/raw/main/data622/hw1/100000_Sales_Records.csv.gz')
 
 ```  
+## Analysis of Data  
 
+The following is an analysis of the data. The following are the columns for the data:  
 
-```{r, eval=FALSE}
+`r names(ksales)`
 
-# Names of columns
-names(ksales)
+I decided to convert the date columns to `Date` datatypes.
+
+```{r}
 
 # Convert date columns to date datatypes
 ksales[['Order Date']] <- as.Date(ksales[['Order Date']], "%m/%d/%Y")
@@ -62,20 +66,55 @@ ksales[['Ship Date']] <- as.Date(ksales[['Ship Date']], "%m/%d/%Y")
 ksales[['Order ID']] <- toString(ksales[['Order ID']])
 ksales[['Sales Channel']] <- as.factor(ksales[['Sales Channel']])
 
+
+bigksales[['Order Date']] <- as.Date(bigksales[['Order Date']], "%m/%d/%Y")
+bigksales[['Ship Date']] <- as.Date(bigksales[['Ship Date']], "%m/%d/%Y")
+bigksales[['Order ID']] <- toString(bigksales[['Order ID']])
+bigksales[['Sales Channel']] <- as.factor(bigksales[['Sales Channel']])
+```  
+
+The following is a snippet of the data:  
+
+```{r}
 # Snippet of the data
 head(ksales)
+head(bigksales)
+```  
 
+The following is a glimpse and summary of the data. There are no missing values.
+
+```{r}
 # glimpse of data
 glimpse(ksales)
-
+glimpse(bigksales)
 summary(ksales)
-
-
-
+summary(bigksales)
 ```
 
+## Structure and Content of the Data  
 
-```{r, eval=FALSE}
+From a cursory view of the data, the sales data looks to contain records of dated transactions for purchases of various categories (cosmetics, vegetables, baby food, fruits, etc) from various countries. Additional information provided are the priority given to the sale, region, ship date, the unit price, quantity, cost, revenue, and total profit. Fortunately, there is no missing data. For the columns that store currency, a logarithmic transformation could be applied to make it easier to read; however, I decided not to do this.
+
+# Machine Learning Algorithms  
+
+For the business that has recorded these transactions, the two machine learning algorithms that came to mind that can be applied to this data would be the supervised decision tree and linear regression algorithms. One purpose for the machine learning would be for classification. If the business wanted to increase its online presence, if it was deemed profitable, then ML can be used to help determine if additional resources should be invested in improving IT infrastructure. Another possibility would be in determining which region and what time of year would be best for storage of perishable goods. Business questions such as where should storage places be acquired to store goods or what times of year and which region have proven to be profitable?  
+
+For a continuous prediction, such as profit, ML can be used to make predictions about profitability if additional countries in a region opened up and also if a particular `Item Type` could be leveraged for greater profitability. In addition, if the business wanted to increase its presence in a particular region, which country would be in need of advertising and investment in additional communication.  
+
+## Selection of Decision Tree  
+
+For this assignment, I decided to attempt a classification problem utilizing decision tree. In previous classes, I did not work with decision trees so I decided to explore what I could do with this algorithm. For this assignment, I decided to look at the sales transactions variable `Sales Channel`. The only two possibilities are `Offline` and `Online`. 
+
+# Decision Tree  
+
+The plan is to build a training and testing set using the data. Build a model using the training data and evaluate its performance using the testing data. The following code sets the seed and partitions the data into training and testing sets. I will do this on both the small and large data sets.
+
+
+## Partitioning and Building the Model  
+
+The following splits the data for the small data set and builds the model. This is followed by a visualization of the model. The fit looks at `Sales Channel` in relation to `Region`, `Item Type`, `Order Priority`, and `Total Profit`.
+
+```{r}
 # Splitting the data 80/20
 set.seed(3822)
 
@@ -103,12 +142,51 @@ tree_model
 tree_model$fit %>% rpart.plot(type = 4, extra = 2, roundint=FALSE)
 
 
+```  
+
+
+The following splits the data for the large data set and builds the model. This is followed by a visualization of the model. The fit looks at `Sales Channel` in relation to `Region`, `Item Type`, `Order Priority`, and `Total Profit`.
+
+```{r}
+# Splitting the data 80/20
+set.seed(3822)
+
+Btraining.samples <- bigksales$`Sales Channel` %>% 
+  createDataPartition(p = 0.8, list=FALSE)
+
+Btrain.data <- bigksales[training.samples,]
+Btest.data <- bigksales[-training.samples,]
+
+Btree_spec <- decision_tree() %>% 
+  # Set the engine and mode
+  set_engine("rpart") %>%
+  set_mode("classification")
+  
+# Train the model
+Btree_model <- Btree_spec %>%
+  fit(formula = `Sales Channel` ~ `Region` + `Item Type` + `Order Priority` + `Total Profit`,
+      data = Btrain.data)
+
+
+# Information about the model
+Btree_model
+
+# Visualization of the model
+Btree_model$fit %>% rpart.plot(type = 4, extra = 2, roundint=FALSE)
+
+
 ```
 
 
+## Performance of the Model  
 
+After constructing the models, I tested its efficacy by using the test data and made a confusion matrix. After the matrix is constructed, the accuracy is given.  
 
-```{r, eval=FALSE}
+$$accuracy = \frac{correct predictions}{all\ predictions}$$  
+
+The following is for the small data set.
+
+```{r}
 
 # Generate the predictions using the test data
 predictions <- predict(tree_model, new_data = test.data)
@@ -124,15 +202,55 @@ confusion_matrix <- conf_mat(data = predictions_combined,
                             estimate = .pred_class,
                             truth = true_classification)
 
+confusion_matrix 
+
 # Calculate the number of correctly predicted classes
 correct_predictions <- 49 + 54
 
 # Calculate the number of all predicted classes
-all_predictions <- 49 + 54 + 41 + 67
+all_predictions <- 49 + 54 + 55 + 42
 
 # Calculate and print the accuracy
 acc_manual <- correct_predictions / all_predictions
 acc_manual
 
+```  
+The following is for the big data set.
 
-```
+```{r}
+
+# Generate the predictions using the test data
+Bpredictions <- predict(Btree_model, new_data = Btest.data)
+
+# Generate a side-by-side of 
+Bpredictions_combined <- Bpredictions %>% 
+  mutate(true_classification = Btest.data$`Sales Channel`)
+
+head(Bpredictions_combined)
+
+# The confusion matrix
+Bconfusion_matrix <- conf_mat(data = Bpredictions_combined,
+                            estimate = .pred_class,
+                            truth = true_classification)
+
+Bconfusion_matrix 
+
+# Calculate the number of correctly predicted classes
+Bcorrect_predictions <- 35046 + 14590
+
+# Calculate the number of all predicted classes
+Ball_predictions <- 35046 + 14590 + 14498 + 35066
+
+# Calculate and print the accuracy
+Bacc_manual <- Bcorrect_predictions / Ball_predictions
+Bacc_manual
+
+```  
+# Conclusion  
+
+From the abysmal accuracies from both models (the model based on the small data set had an accuracy of `r acc_manual` and the big data set model had an accuracy of `r Bacc_manual`), the models can use more refinement. As I was going through previous iterations of building the models, when I used `Country`, the model would break because a country like `Cameroon` that was not in the training set, but appeared in the testing set would break the model. The decision tree does have limitations when new variables are introduced and thus lacks flexibility. As discussed before, another limitation is that decision trees can overfit in that the model can fit the training data but fails when applied to the testing data.  
+
+
+
+
+
