@@ -25,8 +25,9 @@ For this assignment, I used the "Flavors of Cacao" dataset from this [https://ww
 
 ```{r}
 library(tidymodels)
+library(tidyverse)
 
-chocolate <- read_csv('')
+chocolate <- read_csv('https://raw.githubusercontent.com/logicalschema/spring2022/main/data622/hw2/flavors_of_cacao.csv')
 
 
 ```
