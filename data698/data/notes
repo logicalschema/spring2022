@@ -1,0 +1,326 @@
+
+
+2018
+https://data.cityofnewyork.us/Education/2018-DOE-Middle-School-Directory/6kcb-9g8d
+
+2019
+https://data.cityofnewyork.us/Education/2019-DOE-Middle-School-Directory/uqxv-h2se
+
+2020
+https://data.cityofnewyork.us/Education/2020-DOE-Middle-School-Directory/fdpt-nzk4
+
+2021
+https://data.cityofnewyork.us/Education/2021-DOE-Middle-School-Directory/f6s7-vytj
+
+
+
+Example: 
+School DBN: 15K464
+ district schooldbn                   name  \
+241        15    15K464  Park Slope Collegiate
+
+                                              overview neighborhood  \
+241  At Park Slope Collegiate, we are committed to ...   Park Slope
+
+                              address sharedbuilding  \
+241  237 7 Avenue, Brooklyn, NY 11215     Yes-15K460
+
+    accessibility_description     telephone independentwebsite  \
+241          Fully Accessible  718-832-4300                NaN
+
+                                                   url  \
+241  https://www.myschools.nyc/en/schools/middle-sc...
+
+                                     subway                       bus  \
+241  R to 4th Ave - 9th St; F, G to 7th Ave  B103, B61, B63, B67, B69
+
+    code_prog1             name_prog1 admissionsmethod_prog1  geapps_prog1  \
+241      K464S  Park Slope Collegiate                   Open         904.0
+
+     swdapps_prog1  geappsperseat_prog1  swdappsperseat_prog1  swdseats_prog1  \
+241          219.0                 13.0                  12.0            18.0
+
+     geseats_prog1 gefilled_prog1 swdfilled_prog1  \
+241           72.0              Y               Y
+
+                                 eligibility_prog1 priority1_prog1  \
+241  Open to students and residents of District 15             NaN
+
+    priority2_prog1 priority3_prog1 priority4_prog1  priority5_prog1  \
+241             NaN             NaN             NaN              NaN
+
+     priority6_prog1  priority7_prog1 code_prog2 name_prog2  \
+241              NaN              NaN        NaN        NaN
+
+    admissionsmethod_prog2  geapps_prog2  swdapps_prog2  geappsperseat_prog2  \
+241                    NaN           NaN            NaN                  NaN
+
+     swdappsperseat_prog2  swdseats_prog2  geseats_prog2 gefilled_prog2  \
+241                   NaN             NaN            NaN            NaN
+
+    swdfilled_prog2 eligibility_prog2 priority1_prog2 priority2_prog2  \
+241             NaN               NaN             NaN             NaN
+
+    priority3_prog2 priority4_prog2  priority5_prog2  priority6_prog2  \
+241             NaN             NaN              NaN              NaN
+
+     priority7_prog2 code_prog3 name_prog3 admissionsmethod_prog3  \
+241              NaN        NaN        NaN                    NaN
+
+     geapps_prog3  swdapps_prog3  geappsperseat_prog3  swdappsperseat_prog3  \
+241           NaN            NaN                  NaN                   NaN
+
+     swdseats_prog3  geseats_prog3 gefilled_prog3 swdfilled_prog3  \
+241             NaN            NaN            NaN             NaN
+
+    eligibility_prog3 priority1_prog3 priority2_prog3 priority3_prog3  \
+241               NaN             NaN             NaN             NaN
+
+     priority4_prog3  priority5_prog3  priority6_prog3  priority7_prog3  \
+241              NaN              NaN              NaN              NaN
+
+    code_prog4 name_prog4 admissionsmethod_prog4  geapps_prog4  swdapps_prog4  \
+241        NaN        NaN                    NaN           NaN            NaN
+
+     geappsperseat_prog4  swdappsperseat_prog4  swdseats_prog4  geseats_prog4  \
+241                  NaN                   NaN             NaN            NaN
+
+    gefilled_prog4 swdfilled_prog4 eligibility_prog4  priority1_prog4  \
+241            NaN             NaN               NaN              NaN
+
+     priority2_prog4  priority3_prog4  priority4_prog4  priority5_prog4  \
+241              NaN              NaN              NaN              NaN
+
+     priority6_prog4  priority7_prog4 code_prog5 name_prog5  \
+241              NaN              NaN        NaN        NaN
+
+    admissionsmethod_prog5  geapps_prog5  swdapps_prog5  geappsperseat_prog5  \
+241                    NaN           NaN            NaN                  NaN
+
+     swdappsperseat_prog5  swdseats_prog5  geseats_prog5 gefilled_prog5  \
+241                   NaN             NaN            NaN            NaN
+
+    swdfilled_prog5 eligibility_prog5  priority1_prog5  priority2_prog5  \
+241             NaN               NaN              NaN              NaN
+
+     priority3_prog5  priority4_prog5  priority5_prog5  priority6_prog5  \
+241              NaN              NaN              NaN              NaN
+
+     priority7_prog5 code_prog6 name_prog6 admissionsmethod_prog6  \
+241              NaN        NaN        NaN                    NaN
+
+     geapps_prog6  swdapps_prog6  geappsperseat_prog6  swdappsperseat_prog6  \
+241           NaN            NaN                  NaN                   NaN
+
+     swdseats_prog6  geseats_prog6 gefilled_prog6 swdfilled_prog6  \
+241             NaN            NaN            NaN             NaN
+
+    eligibility_prog6 priority1_prog6 priority2_prog6  priority3_prog6  \
+241               NaN             NaN             NaN              NaN
+
+     priority4_prog6  priority5_prog6  priority6_prog6  priority7_prog6  \
+241              NaN              NaN              NaN              NaN
+
+    code_prog7 name_prog7 admissionsmethod_prog7  geapps_prog7  swdapps_prog7  \
+241        NaN        NaN                    NaN           NaN            NaN
+
+     geseats_prog7  swdseats_prog7  geappsperseat_prog7  swdappsperseat_prog7  \
+241            NaN             NaN                  NaN                   NaN
+
+    gefilled_prog7 swdfilled_prog7 eligibility_prog7 priority1_prog7  \
+241            NaN             NaN               NaN             NaN
+
+    priority2_prog7  priority3_prog7  priority4_prog7  priority5_prog7  \
+241             NaN              NaN              NaN              NaN
+
+     priority6_prog7  priority7_prog7 code_prog8 name_prog8  \
+241              NaN              NaN        NaN        NaN
+
+    admissionsmethod_prog8  geapps_prog8  swdapps_prog8  geseats_prog8  \
+241                    NaN           NaN            NaN            NaN
+
+     swdseats_prog8  geappsperseat_prog8  swdappsperseat_prog8 gefilled_prog8  \
+241             NaN                  NaN                   NaN            NaN
+
+    swdfilled_prog8 eligibility_prog8 priority1_prog8 priority2_prog8  \
+241             NaN               NaN             NaN             NaN
+
+     priority3_prog8  priority4_prog8  priority5_prog8  priority6_prog8  \
+241              NaN              NaN              NaN              NaN
+
+     priority7_prog8 code_prog9 name_prog9 admissionsmethod_prog9  \
+241              NaN        NaN        NaN                    NaN
+
+     geapps_prog9  swdapps_prog9  geseats_prog9  swdseats_prog9  \
+241           NaN            NaN            NaN             NaN
+
+     geappsperseat_prog9  swdappsperseat_prog9 gefilled_prog9 swdfilled_prog9  \
+241                  NaN                   NaN            NaN             NaN
+
+    eligibility_prog9  priority1_prog9  priority2_prog9  priority3_prog9  \
+241               NaN              NaN              NaN              NaN
+
+     priority4_prog9  priority5_prog9  priority6_prog9  priority7_prog9  \
+241              NaN              NaN              NaN              NaN
+
+    code_prog10 name_prog10 admissionsmethod_prog10  geapps_prog10  \
+241         NaN         NaN                     NaN            NaN
+
+     swdapps_prog10  geseats_prog10  swdseats_prog10  geappsperseat_prog10  \
+241             NaN             NaN              NaN                   NaN
+
+     swdappsperseat_prog10 gefilled_prog10 swdfilled_prog10  \
+241                    NaN             NaN              NaN
+
+    eligibility_prog10  priority1_prog10  priority2_prog10  priority3_prog10  \
+241                NaN               NaN               NaN               NaN
+
+     priority4_prog10  priority5_prog10  priority6_prog10  priority7_prog10  \
+241               NaN               NaN               NaN               NaN
+
+    code_prog11 name_prog11 admissionsmethod_prog11  geapps_prog11  \
+241         NaN         NaN                     NaN            NaN
+
+     swdapps_prog11  geseats_prog11  swdseats_prog11  geappsperseat_prog11  \
+241             NaN             NaN              NaN                   NaN
+
+     swdappsperseat_prog11 gefilled_prog11 swdfilled_prog11  \
+241                    NaN             NaN              NaN
+
+    eligibility_prog11  priority1_prog11  priority2_prog11  priority3_prog11  \
+241                NaN               NaN               NaN               NaN
+
+     priority4_prog11  priority5_prog11  priority6_prog11  priority7_prog11  \
+241               NaN               NaN               NaN               NaN
+
+    code_prog12 name_prog12 admissionsmethod_prog12  geapps_prog12  \
+241         NaN         NaN                     NaN            NaN
+
+     swdapps_prog12  geseats_prog12  swdseats_prog12  geappsperseat_prog12  \
+241             NaN             NaN              NaN                   NaN
+
+     swdappsperseat_prog12 gefilled_prog12 swdfilled_prog12  \
+241                    NaN             NaN              NaN
+
+    eligibility_prog12  priority1_prog12  priority2_prog12  priority3_prog12  \
+241                NaN               NaN               NaN               NaN
+
+     priority4_prog12  priority5_prog12  priority6_prog12  priority7_prog12  \
+241               NaN               NaN               NaN               NaN
+
+    code_prog13 name_prog13 admissionsmethod_prog13  geapps_prog13  \
+241         NaN         NaN                     NaN            NaN
+
+     swdapps_prog13  geseats_prog13  swdseats_prog13  geappsperseat_prog13  \
+241             NaN             NaN              NaN                   NaN
+
+     swdappsperseat_prog13 gefilled_prog13 swdfilled_prog13  \
+241                    NaN             NaN              NaN
+
+    eligibility_prog13  priority1_prog13  priority2_prog13  priority3_prog13  \
+241                NaN               NaN               NaN               NaN
+
+     priority4_prog13  priority5_prog13  priority6_prog13  priority7_prog13  \
+241               NaN               NaN               NaN               NaN
+
+    code_prog14 name_prog14 admissionsmethod_prog14  geapps_prog14  \
+241         NaN         NaN                     NaN            NaN
+
+     swdapps_prog14  geseats_prog14  swdseats_prog14  geappsperseat_prog14  \
+241             NaN             NaN              NaN                   NaN
+
+     swdappsperseat_prog14 gefilled_prog14 swdfilled_prog14  \
+241                    NaN             NaN              NaN
+
+    eligibility_prog14  priority1_prog14  priority2_prog14  priority3_prog14  \
+241                NaN               NaN               NaN               NaN
+
+     priority4_prog14  priority5_prog14  priority6_prog14  priority7_prog14  \
+241               NaN               NaN               NaN               NaN
+
+    code_prog15 name_prog15 admissionsmethod_prog15  geapps_prog15  \
+241         NaN         NaN                     NaN            NaN
+
+     swdapps_prog15  geseats_prog15  swdseats_prog15  geappsperseat_prog15  \
+241             NaN             NaN              NaN                   NaN
+
+     swdappsperseat_prog15 gefilled_prog15 swdfilled_prog15  \
+241                    NaN             NaN              NaN
+
+    eligibility_prog15  priority1_prog15  priority2_prog15  priority3_prog15  \
+241                NaN               NaN               NaN               NaN
+
+     priority4_prog15  priority5_prog15  priority6_prog15  priority7_prog15  \
+241               NaN               NaN               NaN               NaN
+
+     coursepassrate  elaprof  mathprof                 tophs1 tophs2 tophs3  \
+241            98.0     41.0      45.0  Park Slope Collegiate    NaN    NaN
+
+     surveysafety  totalstudents gradespan  \
+241          75.0          668.0      6-12
+
+                                 diversityinadmissions start_time end_time  \
+241  Students from low-income households, students ...     8:52am   3:20pm
+
+                   ellprograms other_features languageclasses  \
+241  English as a New Language            NaN         Spanish
+
+                       acceleratedclasses electiveclasses  \
+241  Spanish,Algebra I,Living Environment             NaN
+
+    activities_description othersports  Postcode   Borough   Latitude  \
+241                    NaN         NaN   11215.0  BROOKLYN  40.669629
+
+     Longitude  Community Board  Council District  Census Tract        BIN  \
+241 -73.979287            306.0              39.0         155.0  3025510.0
+
+              BBL                 NTA
+241  3.010820e+09  Park Slope-Gowanus
+
+
+
+
+* district 
+* schooldbn                   
+* name 
+* neighborhood
+* address
+
+
+
+* coursepassrate
+% of Students passed core courses
+
+
+* elaprof
+% of Students scored at Level 3 or 4 on the State English Test
+
+* mathprof
+% of Students scored at Level 3 or 4 on the State Math Test
+
+* surveysafety
+% of students feel safe in the hallways, bathrooms, locker room, and cafeteria
+
+
+* ellprograms
+English as a New Language
+
+
+* languageclasses
+Language Courses
+
+* acceleratedclasses
+Accelerated classes
+
+
+* electiveclasses
+Elective classes
+
+* activities_description
+Activities description
+
+* accessibility_description
+Accessibility
+
+* other_features
+Other Features
