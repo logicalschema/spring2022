@@ -1,4 +1,5 @@
-"company","company_location","ref","review_date","cocoa_percent","company_location","final_grade","bean_type","broad_bean_origin"
+"company","specific_bean_origin_
+or_bar_name","ref","review_date","cocoa_percent","company_location","final_grade","bean_type","broad_bean_origin"
 A. Morin,Agua Grande,1876,2016,63%,France,3.75, ,Sao Tome
 A. Morin,Kpime,1676,2015,70%,France,2.75, ,Togo
 A. Morin,Atsane,1676,2015,70%,France,3, ,Togo
