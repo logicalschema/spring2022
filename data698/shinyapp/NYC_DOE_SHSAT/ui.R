@@ -38,7 +38,7 @@ shinyUI(fluidPage(
     
     fluidRow(
       column(12,
-             "Main"
+             plotOutput("distPlot")
       )
     )
 

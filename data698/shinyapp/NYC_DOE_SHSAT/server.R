@@ -65,6 +65,32 @@ shinyServer(function(input, output) {
     })
 
 
+    
+barPlot <- reactive({
+  tempYear <- input$mapYear
+  
+  sc <- paste("sc", toString(tempYear), sep="_")
+  tc <- paste("tc", toString(tempYear), sep="_")
+  oc <- paste("oc", toString(tempYear), sep="_")
+  
+  
+  barplot <- ggplot(data=bar_plot_df, aes(x=district)) + 
+    geom_bar(aes_string(y=sc), stat="identity", position ="identity", alpha=.8, fill='#e0ecf4') +
+    geom_bar(aes_string(y=tc), stat="identity", position="identity", alpha=.8, fill='#9ebcda') + 
+    geom_bar(aes_string(y=oc), stat="identity", position="identity", alpha=.8, fill='#8856a7') + 
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    labs(x = "District", y = "Value") +
+    ggtitle(paste0("Bar Plot of Districts in ", tempYear))
+  
+  
+  return(barplot)
+  
+  
+  
+  
+  
+})
 
     
     output$nycmap <- renderLeaflet({
@@ -81,13 +107,7 @@ shinyServer(function(input, output) {
     
     
     output$distPlot <- renderPlot({
-      withProgress(message = 'Calculations in progress',
-                   detail = 'This may take a while...', value = 0, {
-                     for (i in 1:5) {
-                       incProgress(1/5)
-                       Sys.sleep(0.25)
-                     }
-                   })
+      barPlot()
       
       
       

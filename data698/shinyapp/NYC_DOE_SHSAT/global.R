@@ -36,6 +36,36 @@ school_offers <- subset(school_offers, select = -c(`name`, `telephone`, `address
 
 
 # Drop rows that have totalstudents == NA
-school_info <- school_info %>% drop_na(totalstudents )
+school_info <- school_info %>% drop_na(totalstudents )  
 
+
+# DF for Barplot
+bar_plot_df <- school_offers %>%
+  filter(!is.na(`2018_student_count`)) %>%
+  filter(!is.na(`2018_testers_count`)) %>%
+  filter(!is.na(`2018_offers_count`)) %>%
+  filter(!is.na(`2019_student_count`)) %>%
+  filter(!is.na(`2019_testers_count`)) %>%
+  filter(!is.na(`2019_offers_count`)) %>%
+  filter(!is.na(`2020_student_count`)) %>%
+  filter(!is.na(`2020_testers_count`)) %>%
+  filter(!is.na(`2020_offers_count`)) %>%
+  filter(!is.na(`2021_student_count`)) %>%
+  filter(!is.na(`2021_testers_count`)) %>%
+  filter(!is.na(`2021_offers_count`)) %>%
+  group_by(district) %>%
+  summarise(sc_2018 = sum(`2018_student_count`),
+            tc_2018 = sum(`2018_testers_count`),
+            oc_2018 = sum(`2018_offers_count`),
+            sc_2019 = sum(`2019_student_count`),
+            tc_2019 = sum(`2019_testers_count`),
+            oc_2019 = sum(`2019_offers_count`),
+            sc_2020 = sum(`2020_student_count`),
+            tc_2020 = sum(`2020_testers_count`),
+            oc_2020 = sum(`2020_offers_count`),
+            sc_2021 = sum(`2021_student_count`),
+            tc_2021 = sum(`2021_testers_count`),
+            oc_2021 = sum(`2021_offers_count`))
+
+bar_plot_df <- as.data.frame(bar_plot_df)
 
