@@ -13,21 +13,24 @@ library(shiny)
 shinyUI(fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel(title=span(img(src="https://sps.cuny.edu/sites/all/themes/cuny/assets/img/header_logo.png"), 
+                          br(),
+                          h3("NYC Specialized High Schools Offers Ratio by District: 2018-2021")
+                          )),
+
 
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+          selectInput(inputId = 'mapYear',
+                      label = h4('Year'),
+                      choices = Year,
+                      selected = 2021)
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
-            plotOutput("distPlot")
+            leafletOutput('nycmap', width = '100%', height = '600')
         )
     )
 ))
