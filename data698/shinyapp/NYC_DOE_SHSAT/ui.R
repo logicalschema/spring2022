@@ -19,18 +19,29 @@ shinyUI(fluidPage(
                           )),
 
 
-    # Sidebar with a slider input for number of bins
+    # Sidebar with a select input for map year
     sidebarLayout(
         sidebarPanel(
           selectInput(inputId = 'mapYear',
                       label = h4('Year'),
                       choices = Year,
                       selected = 2021)
-        ),
+          ),
 
         # Show a plot of the generated distribution
         mainPanel(
-            leafletOutput('nycmap', width = '100%', height = '600')
+            leafletOutput('nycmap', width = '100%', height = '600'),
         )
+    ),
+    
+    br(),
+    
+    fluidRow(
+      column(12,
+             "Main"
+      )
     )
+
+    
+    
 ))
