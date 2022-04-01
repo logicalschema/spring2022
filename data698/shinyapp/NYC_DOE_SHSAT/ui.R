@@ -12,7 +12,12 @@ library(shiny)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
-    tags$head(includeHTML(("analytics.html"))),
+    tags$head(includeHTML(("analytics.html")),
+    tags$head(tags$link(rel = "icon", type="image/x-icon", href = "favicon.ico"))
+     
+              
+              ),
+    
 
     # Application title
     titlePanel(title=span(img(src="https://sps.cuny.edu/sites/all/themes/cuny/assets/img/header_logo.png"), 
