@@ -37,8 +37,28 @@ shinyUI(fluidPage(
     br(),
     
     fluidRow(
-      column(12,
+      column(10,
              plotOutput("distPlot")
+      ),
+      column(2,
+             tags$ul(class="legend",
+               tags$li(style="color:#e0ecf4;list-style-type:square;font-size:50px",
+                 tags$span()
+                 
+               ),
+               tags$li(
+                 
+                 
+               ),
+               tags$li(
+                 
+                 
+               )
+               
+               
+               
+             ),
+             
       )
     )
 
