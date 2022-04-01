@@ -8,6 +8,7 @@ library(ggplot2)
 
 
 
+
 # Years that are available for the NYC data
 Year <- c(2018, 2019, 2020, 2021)
 

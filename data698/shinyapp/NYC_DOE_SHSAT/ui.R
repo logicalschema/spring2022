@@ -35,6 +35,7 @@ shinyUI(fluidPage(
     ),
     
     br(),
+    tags$hr(),
     
     fluidRow(
       column(10,
@@ -42,17 +43,14 @@ shinyUI(fluidPage(
       ),
       column(2,
              tags$ul(class="legend",
-               tags$li(style="color:#e0ecf4;list-style-type:square;font-size:50px",
-                 tags$span()
-                 
+               tags$li(style="color:#e0ecf4;list-style-type:square;font-size:20pt",
+                 tags$span(style="color:black;font-size:10pt", "Total Students")
                ),
-               tags$li(
-                 
-                 
+               tags$li(style="color:#9ebcda;list-style-type:square;font-size:20pt",
+                 tags$span(style="color:black;font-size:10pt", "Total Testers")
                ),
-               tags$li(
-                 
-                 
+               tags$li(style="color:#8856a7;list-style-type:square;font-size:20pt",
+                 tags$span(style="color:black;font-size:10pt", "Total Offers")
                )
                
                

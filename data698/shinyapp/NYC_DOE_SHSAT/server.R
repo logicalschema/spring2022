@@ -79,9 +79,13 @@ barPlot <- reactive({
     geom_bar(aes_string(y=tc), stat="identity", position="identity", alpha=.8, fill='#9ebcda') + 
     geom_bar(aes_string(y=oc), stat="identity", position="identity", alpha=.8, fill='#8856a7') + 
     theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5)) +
+    theme(plot.title = element_text(size=14, hjust = 0.5, face="bold"),
+          axis.title.x=element_text(size=12),
+          axis.title.y=element_text(size=12)) +
     labs(x = "District", y = "Value") +
-    ggtitle(paste0("Bar Plot of Districts in ", tempYear))
+    scale_x_continuous(breaks=c(1,5,10,15,20,25,30)) +
+    ggtitle(paste0("Bar Plot of Districts in ", tempYear)) 
+  
   
   
   return(barplot)
