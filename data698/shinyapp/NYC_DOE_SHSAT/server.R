@@ -110,7 +110,7 @@ barPlot <- reactive({
     })
     
     
-    output$distPlot <- renderPlot({
+    output$distPlot <- renderPlotly({
       barPlot()
       
       

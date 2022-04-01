@@ -39,7 +39,7 @@ shinyUI(fluidPage(
     
     fluidRow(
       column(10,
-             plotOutput("distPlot")
+             plotlyOutput("distPlot")
       ),
       column(2,
              tags$ul(class="legend",
