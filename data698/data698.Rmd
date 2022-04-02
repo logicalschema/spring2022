@@ -1,0 +1,46 @@
+---
+title: "Data 698 Project"
+author: "Sung Lee"
+date: '2022-04-02'
+output: 
+  html_document:
+    code_folding: show
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    smooth_scroll: false
+    toc_depth: 3
+number_sections: true
+theme: paper
+---  
+
+# Abstract  
+Academic rigor is seen as a prized tenet in the culture of American meritocracy. Hard work, preparation, and grit are seen as genuine characteristics for a thriving and prosperous economy. With this belief, every year over 25,000 eighth grade students in New York City's public school system take the arduous Specialized High School Admissions Test (SHSAT) to gain admittance to eight prestigious specialized high schools: Bronx High School of Science, Brooklyn Latin School, Brooklyn Technical High School, the High School for Mathematics, Science and Engineering at City College of New York, High School of American Studies at Lehman College, Queens High School for the Sciences at York College, Staten Island Technical High School, and Stuyvesant High School. Yet with a population of over 1 million students, the largest system in the United States, is there equity in the system to allow admittance? It is the plan of this research to look at the data for New York City's school system for the years of 2018 to 2021 with regards to middle schools and the SHSAT. The system is divided into 32 school districts. This study will examine middle school data to see if there is a correlation between the number of offers given for specialized high school based on the SHSAT and an individual school's academic data, programs, and district assignment. It is the hope of this study to identify trends for improving success for schools and to, if any, to determine ways to improve schools that have few offers.
+
+
+# Keywords  
+Regression, Standardized Testing, Feature Selection, Public Education
+
+
+# Literature Review  
+
+
+# Methodology  
+
+
+# Experimentation & Results  
+
+
+# Results  
+
+
+# Summary  
+
+
+# Appendix
+
+
+
+
+

@@ -17,7 +17,7 @@ library(leaflet)
 library(sf)
 library(tidyverse)
 library(dplyr)
-
+library(plotly)
 districts <- read_sf('schooldistricts.geojson')
 districts$school_dist  <- as.numeric(districts$school_dist)
 
