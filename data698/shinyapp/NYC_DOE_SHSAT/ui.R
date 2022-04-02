@@ -19,7 +19,7 @@ shinyUI(fluidPage(
     
 
     # Application title and top row
-    title = "NYC Middle School SHSAT Offers Ratio by District: 2018-2021",
+    title = "NYC Middle School SHSAT Offers Ratio by District: 2016-2021",
     fluidRow(
       column(4,
             tags$a(
@@ -32,7 +32,7 @@ shinyUI(fluidPage(
               ),
       ),
       column(8,
-             h2("NYC Middle School SHSAT Offers Ratio by District: 2018-2021",
+             h2("NYC Middle School SHSAT Offers Ratio by District: 2016-2021",
                 style="padding: 20px 25px 20px"),
 
       ),
