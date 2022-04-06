@@ -19,6 +19,8 @@ NYCLatitude <- 40.730610
 # NYC DOE School District Map Information
 districts <- read_sf('schooldistricts.geojson')
 districts$school_dist  <- as.numeric(districts$school_dist)
+
+# Orders the geojson by school_dist
 districts <- districts[with(districts, order(school_dist)), ]
 
 # Color Palette
