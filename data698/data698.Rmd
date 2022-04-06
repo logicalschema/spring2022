@@ -23,13 +23,218 @@ Academic rigor is seen as a prized tenet in the culture of American meritocracy.
 Regression, Standardized Testing, Feature Selection, Public Education
 
 
+```{r, echo=FALSE}
+library(tidyverse)
+library(dplyr)
+library(sigr)
+library(broom)
+library(ggplot2)
+library(WVPlots)
+library(corrplot)
+
+# From http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+ if (numPlots==1) {
+    print(plots[[1]])
+
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+
+```
+
 # Literature Review  
 
 
 # Methodology  
 
+## Exploratory Data Analysis  
+
+
+```{r}
+# School information: Note: only 2018-2021 are available
+school_info <- read_csv('data/2018-2021_school_information.csv')
+
+# Remove NA values for total_students, course pass rate, elaprof, and mathprof
+school_info <- school_info %>% drop_na(totalstudents)
+school_info <- school_info %>% drop_na(coursepassrate)
+school_info <- school_info %>% drop_na(elaprof)
+school_info <- school_info %>% drop_na(mathprof)
+
+
+# School offers have the offers for middle schools: Note 2016-2021 are available but for the previous data set only 2018-2021 are available
+# Remove rows with NA values
+school_offers <- read_csv('data/school_offers.csv')
+school_offers$Postcode <- as.character(school_offers$Postcode)
+school_offers <- subset(school_offers, select = -c(`name`, `telephone`, `address`, `2016_student_count`,
+                                                   `2016_testers_count`,`2016_offers_count`,`2017_student_count`,`2017_testers_count`,`2017_offers_count`))
+school_offers <- na.omit(school_offers) 
+
+
+# store the 2018 schools
+schools2018 <- school_info[school_info$year == 2018, ]
+
+# Store the 2018 offers
+schooloffers2018 <-  subset(school_offers, select = c(`dbn`, `district`, `Postcode`, `Borough`, `url`, `Latitude`, `Longitude`, `2018_student_count`, `2018_testers_count`, `2018_offers_count`))
+
+schools2018 <- merge(schools2018, schooloffers2018, by.x = 'schooldbn', by.y='dbn')
+
+# Renaming columns
+names(schools2018)[names(schools2018) == '2018_student_count'] <- 'student_count'
+names(schools2018)[names(schools2018) == '2018_testers_count'] <- 'testers_count'
+names(schools2018)[names(schools2018) == '2018_offers_count'] <- 'offers_count'
+
+
+# Create rate_offers
+schools2018$rate_offers <- schools2018$`offers_count` / schools2018$`testers_count`
+
+# Set rows with rate_offers of NA to zero
+schools2018$rate_offers[is.na(schools2018$rate_offers)] <- 0
+
+
+
+## Make the 2019 dataset
+
+## store the 2018 schools
+schools2019 <- school_info[school_info$year == 2019, ]
+
+## Store the 2018 offers
+schooloffers2019 <-  subset(school_offers, select = c(`dbn`, `district`, `Postcode`, `Borough`, `url`, `Latitude`, `Longitude`, `2019_student_count`, `2019_testers_count`, `2019_offers_count`))
+
+schools2019 <- merge(schools2019, schooloffers2019, by.x = 'schooldbn', by.y='dbn')
+
+# Renaming columns
+names(schools2019)[names(schools2019) == '2019_student_count'] <- 'student_count'
+names(schools2019)[names(schools2019) == '2019_testers_count'] <- 'testers_count'
+names(schools2019)[names(schools2019) == '2019_offers_count'] <- 'offers_count'
+
+## Create rate_offers
+schools2019$rate_offers <- schools2019$`offers_count` / schools2019$`testers_count`
+
+## Set rows with rate_offers of NA to zero
+schools2019$rate_offers[is.na(schools2019$rate_offers)] <- 0
+
+
+
+p1 <- ggplot(data=schools2018, aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p2 <- ggplot(data=schools2018, aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p3 <- ggplot(data=schools2018, aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p4 <- ggplot(data=schools2018, aes(x=surveysafety, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p5 <- ggplot(data=schools2018, aes(x=accessibility, y=rate_offers)) + geom_boxplot() + geom_boxplot(outlier.colour = "red")
+
+multiplot(p1, p2, p3, p4, p5, cols=3)
+
+
+```
+
 
 # Experimentation & Results  
+
+
+```{r}
+
+first_model <- lm(rate_offers ~ coursepassrate + elaprof + mathprof + surveysafety, data=schools2018)
+summary(first_model)
+
+# To see the performance metrics in an orderly data frame
+glance(first_model)
+
+# To see the R-squared
+wrapFTest(first_model)
+
+## Evaluation R-2
+firstmodelr_2 <- summary(first_model)$r.squared
+
+
+
+
+## Use the model on the 2019 data
+
+## Create the prediction column based on the model
+schools2019$prediction <- predict(first_model, newdata=schools2019)
+
+## Plot to compare the predictions to actual prediction on the x axis
+ggplot(schools2019, aes(x=prediction, y=rate_offers)) + geom_point() + geom_abline(color="blue")
+
+## 
+GainCurvePlot(
+  schools2019,
+  "prediction",
+  "rate_offers",
+  "First Model")
+
+## The wizard curve does not quite overlap with the prediction curve so this is not a good model
+
+
+# Get the correlation between the prediction and true outcome: rho and print it
+(rho <- cor(schools2019$prediction, schools2019$rate_offers))
+
+# Square rho: rho2 and print it
+(rho2 <- rho ^ 2)
+
+# Get R-squared from glance and print it
+(rsq_glance <- glance(first_model)$r.squared)
+
+# Quasipoisson variance is greater than the mean for offers_count
+glm_second_model <- glm(`offers_count`  ~ `testers_count` + coursepassrate + elaprof + mathprof + surveysafety, data=schools2018, family=quasipoisson)
+
+(perf <- glance(glm_second_model))
+(pseudoR2 <- 1 - perf$deviance/perf$null.deviance)
+
+
+# Calculate the RMSE
+schools2019 %>% 
+  mutate(residual = prediction - offers_count) %>%
+  summarize(rmse  = sqrt(mean(residual^2)))
+
+# Plot predictions vs cnt (pred on x-axis)
+ggplot(schools2019, aes(x = prediction, y = offers_count)) +
+  geom_point() + 
+  geom_abline(color = "darkblue")
+
+
+
+```  
+## Correlation
+
 
 
 # Results  

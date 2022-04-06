@@ -19,6 +19,7 @@ NYCLatitude <- 40.730610
 # NYC DOE School District Map Information
 districts <- read_sf('schooldistricts.geojson')
 districts$school_dist  <- as.numeric(districts$school_dist)
+districts <- districts[with(districts, order(school_dist)), ]
 
 # Color Palette
 pal <- colorQuantile("YlGn", NULL, n = 3)

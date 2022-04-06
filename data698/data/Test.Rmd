@@ -10,7 +10,6 @@ output: html_document
 Getting back to remembering leaflet  
 
 ```{r}
-# library(sp)
 library(maps)
 library(maptools)
 library(leaflet)

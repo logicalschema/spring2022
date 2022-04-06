@@ -49,6 +49,8 @@ shinyServer(function(input, output) {
                                "<strong>Total Test Takers: </strong>", temp2$total_testers, "<br>",
                                "<strong>Proportion of Test Takers: </strong>", format(round(temp2$total_testers / temp2$total_students, 4), nsmall = 4) )
       
+      
+      
       map <- leaflet() %>%
         addTiles() %>%
         addProviderTiles(providers$CartoDB.Positron) %>%
