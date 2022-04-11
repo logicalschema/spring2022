@@ -1,0 +1,93 @@
+---
+title: "Data 622 Homework 3"
+author: "Sung Lee"
+date: '2022-04-11'
+output: 
+  html_document:
+    code_folding: show
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    smooth_scroll: false
+    toc_depth: 3
+number_sections: true
+theme: paper
+---
+
+# Assignment  
+Perform an analysis of the dataset used in Homework #2 using the SVM algorithm.Compare the results with the results from previous homework.  
+
+Based on articles
+
+    https://www.hindawi.com/journals/complexity/2021/5550344/  
+    https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8137961/  
+
+Search for academic content (at least 3 articles) that compare the use of decision trees vs SVMs in your current area of expertise. Which algorithm is recommended to get more accurate results? Is it better for classification or regression scenarios? Do you agree with the recommendations? Why? 
+
+Format: R file & essay
+
+# Data  
+For homework #2, I used the "Flavors of Cacao" dataset from this [https://www.kaggle.com/datasets/techiesid01/flavours-of-cacao?resource=download]( Kaggle website). In homework #2, I sought to create a decision tree that would solve a regression problem: what will be the final grade for a cocoa bean. 
+
+The following code sets up our libraries and imports the dataset.
+
+```{r}
+library(tidymodels)
+library(tidyverse)
+library(readr)
+library(rpart.plot)
+
+# Used for Random Forest
+library(ranger)
+
+chocolate <- read_csv('https://raw.githubusercontent.com/logicalschema/spring2022/main/data622/hw2/flavors_of_cacao.csv')
+
+```  
+
+This is a view of the imported dataset.
+
+```{r}
+names(chocolate)
+head(chocolate)
+```  
+
+## Cleaning  
+The column `cocoa_percent` has a `chr` data type so this needs to be converted to a double data type. The column `ref` was removed. The columns `broad_bean_origin` and `bean_type` were converted to `factor` variables. I also did a `drop_na`.
+
+
+```{r}
+chocolate <- chocolate %>% drop_na()
+
+
+# Parses the cocoa_percent and converts it to percentage
+chocolate$cocoa_percent <- parse_number(chocolate$cocoa_percent)/100
+
+# Removes the ref column
+chocolate <- chocolate[-c(3)]
+
+# Convert some columns to factors
+chocolate$broad_bean_origin  <- as.factor(chocolate$broad_bean_origin )
+chocolate$bean_type  <- as.factor(chocolate$bean_type)
+
+```  
+
+This is a view of the data after our modification.  
+
+```{r}
+head(chocolate)
+summary(chocolate)
+
+```
+
+## Partition  
+
+```{r}
+# Splitting the data 80/20
+set.seed(32022)
+
+data_split <- initial_split(chocolate, prop = 0.8, strata = 'bean_type')
+chocolate_train <- training(data_split)
+chocolate_test <- testing(data_split)
+
+```  

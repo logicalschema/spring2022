@@ -1,0 +1,13 @@
+hw3
+
+
+Perform an analysis of the dataset used in Homework #2 using the SVM algorithm.Compare the results with the results from previous homework.
+Based on articles
+
+    https://www.hindawi.com/journals/complexity/2021/5550344/
+    https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8137961/
+
+Search for academic content (at least 3 articles) that compare the use of decision trees vs SVMs in your current area of expertise.
+Which algorithm is recommended to get more accurate results? Is it better for classification or regression scenarios? Do you agree with the recommendations? Why?
+Format: R file & essay
+Due date: Sunday, April 24, 2022, end of day
