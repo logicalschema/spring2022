@@ -16,7 +16,7 @@ theme: paper
 ---
 
 # Assignment  
-Perform an analysis of the dataset used in Homework #2 using the SVM algorithm.Compare the results with the results from previous homework.  
+Perform an analysis of the dataset used in Homework #2 using the SVM algorithm. Compare the results with the results from previous homework.  
 
 Based on articles
 
@@ -35,13 +35,15 @@ The following code sets up our libraries and imports the dataset.
 ```{r}
 library(tidymodels)
 library(tidyverse)
+library(e1071)
 library(readr)
 library(rpart.plot)
+library(ggplot2)
 
 # Used for Random Forest
 library(ranger)
 
-chocolate <- read_csv('https://raw.githubusercontent.com/logicalschema/spring2022/main/data622/hw2/flavors_of_cacao.csv')
+chocolate <- read_csv('https://raw.githubusercontent.com/logicalschema/spring2022/main/data622/hw3/flavors_of_cacao.csv')
 
 ```  
 
@@ -55,6 +57,7 @@ head(chocolate)
 ## Cleaning  
 The column `cocoa_percent` has a `chr` data type so this needs to be converted to a double data type. The column `ref` was removed. The columns `broad_bean_origin` and `bean_type` were converted to `factor` variables. I also did a `drop_na`.
 
+For the SVM model, a new variable, `final_grade_floor` was made that takes the floor of `final_grade`. This is to make the grade an integer value for later use in the SVM model.
 
 ```{r}
 chocolate <- chocolate %>% drop_na()
@@ -70,6 +73,10 @@ chocolate <- chocolate[-c(3)]
 chocolate$broad_bean_origin  <- as.factor(chocolate$broad_bean_origin )
 chocolate$bean_type  <- as.factor(chocolate$bean_type)
 
+# Making a value for SVM
+chocolate$final_grade_floor <- floor(chocolate$final_grade)
+chocolate$cocoa_percent_floor <- floor(chocolate$cocoa_percent)
+
 ```  
 
 This is a view of the data after our modification.  
@@ -81,6 +88,7 @@ summary(chocolate)
 ```
 
 ## Partition  
+The following code splits the data into two partitions.
 
 ```{r}
 # Splitting the data 80/20
@@ -90,4 +98,42 @@ data_split <- initial_split(chocolate, prop = 0.8, strata = 'bean_type')
 chocolate_train <- training(data_split)
 chocolate_test <- testing(data_split)
 
+``` 
+
+
+
+
+# SVM  
+The following code constructs the SVM model based. It looks at the `final_grade` based upon `cocoa_percent` and `bean_type`.
+
+```{r}
+svm_model <- svm(final_grade ~ cocoa_percent + bean_type,
+                 data=chocolate_train,
+                 kernel="polynomial",
+                 scale=FALSE)
+
+svm_model
+
 ```  
+
+## Analysis of Model  
+Next, we will run the model and calculate the RMSE for when the model is run with the test data.
+
+```{r}
+chocolate_test$pred <- predict(svm_model, newdata=chocolate_test)
+
+rmse <- chocolate_test %>% 
+  mutate(residual = final_grade - pred) %>%
+  summarize(rmse = sqrt(mean(residual^2)))
+
+```  
+
+The RMSE is **`r rmse$rmse`**.
+
+# Summary  
+The SVM model had a better RMSE score than the random forest model from the previous homework at `r rmse$rmse`. Because I had gone with building models for regression and from the reading materials, going with SVM was the preferred method for this exercise. The relationship did not look linear and for the SVM model I used a `polynomial` kernel parameter that increased the RMSE score.
+
+[Decision Tree vs SVM](https://towardsdatascience.com/comparative-study-on-classic-machine-learning-algorithms-24f9ff6ab222?gi=397662cf3495) stated that SVM uses a "kernel trick to solve non-inear problems whereas decision trees derive hyper-rectangles in input space to solve the problem" and "decision trees are better for categorical data and it deals with colinearity" better than SVM.  
+
+With this homework, I would lean towards SVMs for regression over decision tree.
+

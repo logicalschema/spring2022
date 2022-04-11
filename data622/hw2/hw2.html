@@ -2896,26 +2896,21 @@ regression problem: what will be the final grade for a cocoa bean. The
 dataset will be split in a training and testing partitions.</p>
 <p>The following code sets up our libraries and imports the dataset.</p>
 <pre class="r"><code>library(tidymodels)</code></pre>
-<pre><code>## Registered S3 method overwritten by &#39;tune&#39;:
-##   method                   from   
-##   required_pkgs.model_spec parsnip</code></pre>
-<pre><code>## -- Attaching packages -------------------------------------- tidymodels 0.1.4 --</code></pre>
+<pre><code>## -- Attaching packages -------------------------------------- tidymodels 0.2.0 --</code></pre>
 <pre><code>## v broom        0.7.12     v recipes      0.2.0 
-## v dials        0.1.0      v rsample      0.1.1 
+## v dials        0.1.1      v rsample      0.1.1 
 ## v dplyr        1.0.8      v tibble       3.1.6 
 ## v ggplot2      3.3.5      v tidyr        1.2.0 
-## v infer        1.0.0      v tune         0.1.6 
-## v modeldata    0.1.1      v workflows    0.2.4 
-## v parsnip      0.2.0      v workflowsets 0.1.0 
+## v infer        1.0.0      v tune         0.2.0 
+## v modeldata    0.1.1      v workflows    0.2.6 
+## v parsnip      0.2.1      v workflowsets 0.2.1 
 ## v purrr        0.3.4      v yardstick    0.0.9</code></pre>
-<pre><code>## Warning: package &#39;parsnip&#39; was built under R version 4.1.3</code></pre>
 <pre><code>## -- Conflicts ----------------------------------------- tidymodels_conflicts() --
 ## x purrr::discard() masks scales::discard()
 ## x dplyr::filter()  masks stats::filter()
 ## x dplyr::lag()     masks stats::lag()
 ## x recipes::step()  masks stats::step()
-## x tune::tune()     masks parsnip::tune()
-## * Dig deeper into tidy modeling with R at https://www.tmwr.org</code></pre>
+## * Learn how to get started at https://www.tidymodels.org/start/</code></pre>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
 <pre><code>## v readr   2.1.2     v forcats 0.5.1
@@ -2927,6 +2922,18 @@ dataset will be split in a training and testing partitions.</p>
 ## x stringr::fixed()    masks recipes::fixed()
 ## x dplyr::lag()        masks stats::lag()
 ## x readr::spec()       masks yardstick::spec()</code></pre>
+<pre class="r"><code>library(e1071)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;e1071&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tune&#39;:
+## 
+##     tune</code></pre>
+<pre><code>## The following object is masked from &#39;package:rsample&#39;:
+## 
+##     permutations</code></pre>
+<pre><code>## The following object is masked from &#39;package:parsnip&#39;:
+## 
+##     tune</code></pre>
 <pre class="r"><code>library(readr)
 library(rpart.plot)</code></pre>
 <pre><code>## Loading required package: rpart</code></pre>
@@ -2936,9 +2943,9 @@ library(rpart.plot)</code></pre>
 ## 
 ##     prune</code></pre>
 <pre class="r"><code># Used for Random Forest
-library(ranger)</code></pre>
-<pre><code>## Warning: package &#39;ranger&#39; was built under R version 4.1.3</code></pre>
-<pre class="r"><code>chocolate &lt;- read_csv(&#39;https://raw.githubusercontent.com/logicalschema/spring2022/main/data622/hw2/flavors_of_cacao.csv&#39;)</code></pre>
+library(ranger)
+
+chocolate &lt;- read_csv(&#39;https://raw.githubusercontent.com/logicalschema/spring2022/main/data622/hw2/flavors_of_cacao.csv&#39;)</code></pre>
 <pre><code>## Rows: 1795 Columns: 9</code></pre>
 <pre><code>## -- Column specification --------------------------------------------------------
 ## Delimiter: &quot;,&quot;

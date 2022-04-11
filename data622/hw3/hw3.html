@@ -2877,7 +2877,7 @@ div.tocify {
 <div id="assignment" class="section level1">
 <h1>Assignment</h1>
 <p>Perform an analysis of the dataset used in Homework #2 using the SVM
-algorithm.Compare the results with the results from previous
+algorithm. Compare the results with the results from previous
 homework.</p>
 <p>Based on articles</p>
 <pre><code>https://www.hindawi.com/journals/complexity/2021/5550344/  
@@ -2910,7 +2910,7 @@ regression problem: what will be the final grade for a cocoa bean.</p>
 ## x dplyr::filter()  masks stats::filter()
 ## x dplyr::lag()     masks stats::lag()
 ## x recipes::step()  masks stats::step()
-## * Learn how to get started at https://www.tidymodels.org/start/</code></pre>
+## * Search for functions across packages at https://www.tidymodels.org/find/</code></pre>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
 <pre><code>## v readr   2.1.2     v forcats 0.5.1
@@ -2922,6 +2922,18 @@ regression problem: what will be the final grade for a cocoa bean.</p>
 ## x stringr::fixed()    masks recipes::fixed()
 ## x dplyr::lag()        masks stats::lag()
 ## x readr::spec()       masks yardstick::spec()</code></pre>
+<pre class="r"><code>library(e1071)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;e1071&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tune&#39;:
+## 
+##     tune</code></pre>
+<pre><code>## The following object is masked from &#39;package:rsample&#39;:
+## 
+##     permutations</code></pre>
+<pre><code>## The following object is masked from &#39;package:parsnip&#39;:
+## 
+##     tune</code></pre>
 <pre class="r"><code>library(readr)
 library(rpart.plot)</code></pre>
 <pre><code>## Loading required package: rpart</code></pre>
@@ -2930,10 +2942,12 @@ library(rpart.plot)</code></pre>
 <pre><code>## The following object is masked from &#39;package:dials&#39;:
 ## 
 ##     prune</code></pre>
-<pre class="r"><code># Used for Random Forest
+<pre class="r"><code>library(ggplot2)
+
+# Used for Random Forest
 library(ranger)
 
-chocolate &lt;- read_csv(&#39;https://raw.githubusercontent.com/logicalschema/spring2022/main/data622/hw2/flavors_of_cacao.csv&#39;)</code></pre>
+chocolate &lt;- read_csv(&#39;https://raw.githubusercontent.com/logicalschema/spring2022/main/data622/hw3/flavors_of_cacao.csv&#39;)</code></pre>
 <pre><code>## Rows: 1795 Columns: 9</code></pre>
 <pre><code>## -- Column specification --------------------------------------------------------
 ## Delimiter: &quot;,&quot;
@@ -2962,6 +2976,9 @@ type so this needs to be converted to a double data type. The column
 <code>ref</code> was removed. The columns <code>broad_bean_origin</code>
 and <code>bean_type</code> were converted to <code>factor</code>
 variables. I also did a <code>drop_na</code>.</p>
+<p>For the SVM model, a new variable, <code>final_grade_floor</code> was
+made that takes the floor of <code>final_grade</code>. This is to make
+the grade an integer value for later use in the SVM model.</p>
 <pre class="r"><code>chocolate &lt;- chocolate %&gt;% drop_na()
 
 
@@ -2973,12 +2990,16 @@ chocolate &lt;- chocolate[-c(3)]
 
 # Convert some columns to factors
 chocolate$broad_bean_origin  &lt;- as.factor(chocolate$broad_bean_origin )
-chocolate$bean_type  &lt;- as.factor(chocolate$bean_type)</code></pre>
+chocolate$bean_type  &lt;- as.factor(chocolate$bean_type)
+
+# Making a value for SVM
+chocolate$final_grade_floor &lt;- floor(chocolate$final_grade)
+chocolate$cocoa_percent_floor &lt;- floor(chocolate$cocoa_percent)</code></pre>
 <p>This is a view of the data after our modification.</p>
 <pre class="r"><code>head(chocolate)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["company"],"name":[1],"type":["chr"],"align":["left"]},{"label":["specific_bean_origin_or_bar_name"],"name":[2],"type":["chr"],"align":["left"]},{"label":["review_date"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["cocoa_percent"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["company_location"],"name":[5],"type":["chr"],"align":["left"]},{"label":["final_grade"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["bean_type"],"name":[7],"type":["fct"],"align":["left"]},{"label":["broad_bean_origin"],"name":[8],"type":["fct"],"align":["left"]}],"data":[{"1":"A. Morin","2":"Agua Grande","3":"2016","4":"0.63","5":"France","6":"3.75","7":" ","8":"Sao Tome"},{"1":"A. Morin","2":"Kpime","3":"2015","4":"0.70","5":"France","6":"2.75","7":" ","8":"Togo"},{"1":"A. Morin","2":"Atsane","3":"2015","4":"0.70","5":"France","6":"3.00","7":" ","8":"Togo"},{"1":"A. Morin","2":"Akata","3":"2015","4":"0.70","5":"France","6":"3.50","7":" ","8":"Togo"},{"1":"A. Morin","2":"Quilla","3":"2015","4":"0.70","5":"France","6":"3.50","7":" ","8":"Peru"},{"1":"A. Morin","2":"Carenero","3":"2014","4":"0.70","5":"France","6":"2.75","7":"Criollo","8":"Venezuela"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["company"],"name":[1],"type":["chr"],"align":["left"]},{"label":["specific_bean_origin_or_bar_name"],"name":[2],"type":["chr"],"align":["left"]},{"label":["review_date"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["cocoa_percent"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["company_location"],"name":[5],"type":["chr"],"align":["left"]},{"label":["final_grade"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["bean_type"],"name":[7],"type":["fct"],"align":["left"]},{"label":["broad_bean_origin"],"name":[8],"type":["fct"],"align":["left"]},{"label":["final_grade_floor"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["cocoa_percent_floor"],"name":[10],"type":["dbl"],"align":["right"]}],"data":[{"1":"A. Morin","2":"Agua Grande","3":"2016","4":"0.63","5":"France","6":"3.75","7":" ","8":"Sao Tome","9":"3","10":"0"},{"1":"A. Morin","2":"Kpime","3":"2015","4":"0.70","5":"France","6":"2.75","7":" ","8":"Togo","9":"2","10":"0"},{"1":"A. Morin","2":"Atsane","3":"2015","4":"0.70","5":"France","6":"3.00","7":" ","8":"Togo","9":"3","10":"0"},{"1":"A. Morin","2":"Akata","3":"2015","4":"0.70","5":"France","6":"3.50","7":" ","8":"Togo","9":"3","10":"0"},{"1":"A. Morin","2":"Quilla","3":"2015","4":"0.70","5":"France","6":"3.50","7":" ","8":"Peru","9":"3","10":"0"},{"1":"A. Morin","2":"Carenero","3":"2014","4":"0.70","5":"France","6":"2.75","7":"Criollo","8":"Venezuela","9":"2","10":"0"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <pre class="r"><code>summary(chocolate)</code></pre>
@@ -2998,17 +3019,18 @@ chocolate$bean_type  &lt;- as.factor(chocolate$bean_type)</code></pre>
 ##  3rd Qu.:0.750                      3rd Qu.:3.500   Forastero (Nacional): 52  
 ##  Max.   :1.000                      Max.   :5.000   Blend               : 41  
 ##                                                     (Other)             :155  
-##           broad_bean_origin
-##  Venezuela         :214    
-##  Ecuador           :193    
-##  Peru              :165    
-##  Madagascar        :145    
-##  Dominican Republic:141    
-##                    : 73    
+##           broad_bean_origin final_grade_floor cocoa_percent_floor
+##  Venezuela         :214     Min.   :1.000     Min.   :0.00000    
+##  Ecuador           :193     1st Qu.:3.000     1st Qu.:0.00000    
+##  Peru              :165     Median :3.000     Median :0.00000    
+##  Madagascar        :145     Mean   :2.797     Mean   :0.01115    
+##  Dominican Republic:141     3rd Qu.:3.000     3rd Qu.:0.00000    
+##                    : 73     Max.   :5.000     Max.   :1.00000    
 ##  (Other)           :862</code></pre>
 </div>
 <div id="partition" class="section level2">
 <h2>Partition</h2>
+<p>The following code splits the data into two partitions.</p>
 <pre class="r"><code># Splitting the data 80/20
 set.seed(32022)
 
@@ -3016,6 +3038,63 @@ data_split &lt;- initial_split(chocolate, prop = 0.8, strata = &#39;bean_type&#3
 chocolate_train &lt;- training(data_split)
 chocolate_test &lt;- testing(data_split)</code></pre>
 </div>
+</div>
+<div id="svm" class="section level1">
+<h1>SVM</h1>
+<p>The following code constructs the SVM model based. It looks at the
+<code>final_grade</code> based upon <code>cocoa_percent</code> and
+<code>bean_type</code>.</p>
+<pre class="r"><code>svm_model &lt;- svm(final_grade ~ cocoa_percent + bean_type,
+                 data=chocolate_train,
+                 kernel=&quot;polynomial&quot;,
+                 scale=FALSE)
+
+svm_model</code></pre>
+<pre><code>## 
+## Call:
+## svm(formula = final_grade ~ cocoa_percent + bean_type, data = chocolate_train, 
+##     kernel = &quot;polynomial&quot;, scale = FALSE)
+## 
+## 
+## Parameters:
+##    SVM-Type:  eps-regression 
+##  SVM-Kernel:  polynomial 
+##        cost:  1 
+##      degree:  3 
+##       gamma:  0.02380952 
+##      coef.0:  0 
+##     epsilon:  0.1 
+## 
+## 
+## Number of Support Vectors:  1282</code></pre>
+<div id="analysis-of-model" class="section level2">
+<h2>Analysis of Model</h2>
+<p>Next, we will run the model and calculate the RMSE for when the model
+is run with the test data.</p>
+<pre class="r"><code>chocolate_test$pred &lt;- predict(svm_model, newdata=chocolate_test)
+
+rmse &lt;- chocolate_test %&gt;% 
+  mutate(residual = final_grade - pred) %&gt;%
+  summarize(rmse = sqrt(mean(residual^2)))</code></pre>
+<p>The RMSE is <strong>0.4565467</strong>.</p>
+</div>
+</div>
+<div id="summary" class="section level1">
+<h1>Summary</h1>
+<p>The SVM model had a better RMSE score than the random forest model
+from the previous homework at 0.4565467. Because I had gone with
+building models for regression and from the reading materials, going
+with SVM was the preferred method for this exercise. The relationship
+did not look linear and for the SVM model I used a
+<code>polynomial</code> kernel parameter that increased the RMSE
+score.</p>
+<p><a href="https://towardsdatascience.com/comparative-study-on-classic-machine-learning-algorithms-24f9ff6ab222?gi=397662cf3495">Decision
+Tree vs SVM</a> stated that SVM uses a “kernel trick to solve non-inear
+problems whereas decision trees derive hyper-rectangles in input space
+to solve the problem” and “decision trees are better for categorical
+data and it deals with colinearity” better than SVM.</p>
+<p>With this homework, I would lean towards SVMs for regression over
+decision tree.</p>
 </div>
 
 
