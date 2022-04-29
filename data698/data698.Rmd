@@ -31,6 +31,10 @@ library(broom)
 library(ggplot2)
 library(WVPlots)
 library(corrplot)
+library(tidymodels)
+library(readr)
+library(rpart.plot)
+library(GGally)
 
 # From http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
 # Multiple plot function
@@ -99,6 +103,16 @@ school_info <- school_info %>% drop_na(coursepassrate)
 school_info <- school_info %>% drop_na(elaprof)
 school_info <- school_info %>% drop_na(mathprof)
 
+# Convert totalstudents to numberical
+school_info$totalstudents <- as.numeric(as.character(school_info$totalstudents))
+
+
+# Potential features
+## Dual Program feature: If the school has a dual language program
+school_info$dual_program <- ifelse(str_detect(school_info$ellprograms, "Dual") & (is.na(school_info$ellprograms) == FALSE), 1, 0)
+
+## Specialized Test Prep feature: If the school has a specialized high school prep class 
+school_info$shsat_prep <- ifelse(str_detect(school_info$electiveclasses, "Specialized High School Test") & (is.na(school_info$electiveclasses) == FALSE), 1, 0)
 
 # School offers have the offers for middle schools: Note 2016-2021 are available but for the previous data set only 2018-2021 are available
 # Remove rows with NA values
@@ -133,7 +147,7 @@ schools2018$rate_offers[is.na(schools2018$rate_offers)] <- 0
 
 ## Make the 2019 dataset
 
-## store the 2018 schools
+## store the 2019 schools
 schools2019 <- school_info[school_info$year == 2019, ]
 
 ## Store the 2018 offers
@@ -152,6 +166,48 @@ schools2019$rate_offers <- schools2019$`offers_count` / schools2019$`testers_cou
 ## Set rows with rate_offers of NA to zero
 schools2019$rate_offers[is.na(schools2019$rate_offers)] <- 0
 
+# store the 2020 schools
+schools2020 <- school_info[school_info$year == 2020, ]
+
+# Store the 2020 offers
+schooloffers2020 <-  subset(school_offers, select = c(`dbn`, `district`, `Postcode`, `Borough`, `url`, `Latitude`, `Longitude`, `2020_student_count`, `2020_testers_count`, `2020_offers_count`))
+
+schools2020 <- merge(schools2020, schooloffers2020, by.x = 'schooldbn', by.y='dbn')
+
+# Renaming columns
+names(schools2020)[names(schools2020) == '2020_student_count'] <- 'student_count'
+names(schools2020)[names(schools2020) == '2020_testers_count'] <- 'testers_count'
+names(schools2020)[names(schools2020) == '2020_offers_count'] <- 'offers_count'
+
+
+# Create rate_offers
+schools2020$rate_offers <- schools2020$`offers_count` / schools2020$`testers_count`
+
+# Set rows with rate_offers of NA to zero
+schools2020$rate_offers[is.na(schools2020$rate_offers)] <- 0
+
+
+
+# store the 2021 schools
+schools2021 <- school_info[school_info$year == 2021, ]
+
+# Store the 2021 offers
+schooloffers2021 <-  subset(school_offers, select = c(`dbn`, `district`, `Postcode`, `Borough`, `url`, `Latitude`, `Longitude`, `2021_student_count`, `2021_testers_count`, `2021_offers_count`))
+
+schools2021 <- merge(schools2021, schooloffers2021, by.x = 'schooldbn', by.y='dbn')
+
+# Renaming columns
+names(schools2021)[names(schools2021) == '2021_student_count'] <- 'student_count'
+names(schools2021)[names(schools2021) == '2021_testers_count'] <- 'testers_count'
+names(schools2021)[names(schools2021) == '2021_offers_count'] <- 'offers_count'
+
+
+# Create rate_offers
+schools2021$rate_offers <- schools2021$`offers_count` / schools2021$`testers_count`
+
+# Set rows with rate_offers of NA to zero
+schools2021$rate_offers[is.na(schools2021$rate_offers)] <- 0
+
 
 
 p1 <- ggplot(data=schools2018, aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
@@ -162,6 +218,32 @@ p5 <- ggplot(data=schools2018, aes(x=accessibility, y=rate_offers)) + geom_boxpl
 
 multiplot(p1, p2, p3, p4, p5, cols=3)
 
+
+
+# Cor plots
+ggcorr(schools2021[, c(6,7,8,9,10,18,19,26,27,28,29)], label = T, hjust= 0.9)
+```  
+
+
+```{r}
+set.seed(422)
+data_split <- initial_split(schools2018, prop = 0.8, strata = district.x)
+schools_train <- training(data_split)
+schools_test <- testing(data_split)
+
+model_spec <- decision_tree() %>%
+  set_mode("regression") %>%
+  set_engine("rpart")
+
+model_spec
+
+# Train the model
+model <- model_spec %>%
+  fit(formula = offers_count ~ testers_count + student_count + elaprof + mathprof + coursepassrate,
+      data = schools_train)
+
+# Information about the model
+model
 
 ```
 
