@@ -118,116 +118,77 @@ school_info$shsat_prep <- ifelse(str_detect(school_info$electiveclasses, "Specia
 # Remove rows with NA values
 school_offers <- read_csv('data/school_offers.csv')
 school_offers$Postcode <- as.character(school_offers$Postcode)
-school_offers <- subset(school_offers, select = -c(`name`, `telephone`, `address`, `2016_student_count`,
-                                                   `2016_testers_count`,`2016_offers_count`,`2017_student_count`,`2017_testers_count`,`2017_offers_count`))
+school_offers <- subset(school_offers, select = -c(`name`, `telephone`, `address`, `2016_student_count`,                                  `2016_testers_count`,`2016_offers_count`,`2017_student_count`,`2017_testers_count`,`2017_offers_count`))
 school_offers <- na.omit(school_offers) 
 
-
-# store the 2018 schools
-schools2018 <- school_info[school_info$year == 2018, ]
-
-# Store the 2018 offers
-schooloffers2018 <-  subset(school_offers, select = c(`dbn`, `district`, `Postcode`, `Borough`, `url`, `Latitude`, `Longitude`, `2018_student_count`, `2018_testers_count`, `2018_offers_count`))
-
-schools2018 <- merge(schools2018, schooloffers2018, by.x = 'schooldbn', by.y='dbn')
-
-# Renaming columns
-names(schools2018)[names(schools2018) == '2018_student_count'] <- 'student_count'
-names(schools2018)[names(schools2018) == '2018_testers_count'] <- 'testers_count'
-names(schools2018)[names(schools2018) == '2018_offers_count'] <- 'offers_count'
+temp1 <- subset(school_info, select = c(`district`, `schooldbn`, `name`, `year`, `coursepassrate`, `accessibility`, `elaprof`, `mathprof`, `totalstudents`, `surveysafety`,`dual_program`, `shsat_prep`))
 
 
-# Create rate_offers
-schools2018$rate_offers <- schools2018$`offers_count` / schools2018$`testers_count`
+temp2018 <- merge(temp1[temp1$year == 2018, ], subset(school_offers, select = c(`dbn`, `2018_student_count`, `2018_testers_count`, `2018_offers_count`)), by.x = 'schooldbn', by.y='dbn')
 
-# Set rows with rate_offers of NA to zero
-schools2018$rate_offers[is.na(schools2018$rate_offers)] <- 0
-
-
-
-## Make the 2019 dataset
-
-## store the 2019 schools
-schools2019 <- school_info[school_info$year == 2019, ]
-
-## Store the 2018 offers
-schooloffers2019 <-  subset(school_offers, select = c(`dbn`, `district`, `Postcode`, `Borough`, `url`, `Latitude`, `Longitude`, `2019_student_count`, `2019_testers_count`, `2019_offers_count`))
-
-schools2019 <- merge(schools2019, schooloffers2019, by.x = 'schooldbn', by.y='dbn')
-
-# Renaming columns
-names(schools2019)[names(schools2019) == '2019_student_count'] <- 'student_count'
-names(schools2019)[names(schools2019) == '2019_testers_count'] <- 'testers_count'
-names(schools2019)[names(schools2019) == '2019_offers_count'] <- 'offers_count'
-
-## Create rate_offers
-schools2019$rate_offers <- schools2019$`offers_count` / schools2019$`testers_count`
-
-## Set rows with rate_offers of NA to zero
-schools2019$rate_offers[is.na(schools2019$rate_offers)] <- 0
-
-# store the 2020 schools
-schools2020 <- school_info[school_info$year == 2020, ]
-
-# Store the 2020 offers
-schooloffers2020 <-  subset(school_offers, select = c(`dbn`, `district`, `Postcode`, `Borough`, `url`, `Latitude`, `Longitude`, `2020_student_count`, `2020_testers_count`, `2020_offers_count`))
-
-schools2020 <- merge(schools2020, schooloffers2020, by.x = 'schooldbn', by.y='dbn')
-
-# Renaming columns
-names(schools2020)[names(schools2020) == '2020_student_count'] <- 'student_count'
-names(schools2020)[names(schools2020) == '2020_testers_count'] <- 'testers_count'
-names(schools2020)[names(schools2020) == '2020_offers_count'] <- 'offers_count'
+names(temp2018)[names(temp2018) == '2018_student_count'] <- 'student_count'
+names(temp2018)[names(temp2018) == '2018_testers_count'] <- 'testers_count'
+names(temp2018)[names(temp2018) == '2018_offers_count'] <- 'offers_count'
 
 
-# Create rate_offers
-schools2020$rate_offers <- schools2020$`offers_count` / schools2020$`testers_count`
+temp2019 <- merge(temp1[temp1$year == 2019, ], subset(school_offers, select = c(`dbn`, `2019_student_count`, `2019_testers_count`, `2019_offers_count`)), by.x = 'schooldbn', by.y='dbn')
 
-# Set rows with rate_offers of NA to zero
-schools2020$rate_offers[is.na(schools2020$rate_offers)] <- 0
+names(temp2019)[names(temp2019) == '2019_student_count'] <- 'student_count'
+names(temp2019)[names(temp2019) == '2019_testers_count'] <- 'testers_count'
+names(temp2019)[names(temp2019) == '2019_offers_count'] <- 'offers_count'
+
+temp2020 <- merge(temp1[temp1$year == 2020, ], subset(school_offers, select = c(`dbn`, `2020_student_count`, `2020_testers_count`, `2020_offers_count`)), by.x = 'schooldbn', by.y='dbn')
+
+names(temp2020)[names(temp2020) == '2020_student_count'] <- 'student_count'
+names(temp2020)[names(temp2020) == '2020_testers_count'] <- 'testers_count'
+names(temp2020)[names(temp2020) == '2020_offers_count'] <- 'offers_count'
+
+temp2021 <- merge(temp1[temp1$year == 2021, ], subset(school_offers, select = c(`dbn`, `2021_student_count`, `2021_testers_count`, `2021_offers_count`)), by.x = 'schooldbn', by.y='dbn')
+
+names(temp2021)[names(temp2021) == '2021_student_count'] <- 'student_count'
+names(temp2021)[names(temp2021) == '2021_testers_count'] <- 'testers_count'
+names(temp2021)[names(temp2021) == '2021_offers_count'] <- 'offers_count'
+
+
+# Create model data and concatenate the temp data frames
+model_data <- rbind(temp2018, temp2019)
+model_data <- rbind(model_data, temp2020)
+model_data <- rbind(model_data, temp2021)
+
+
+# Create rate_offers: number of offers / number of testers
+model_data$rate_offers <- model_data$offers_count / model_data$testers_count
+model_data$rate_offers[is.na(model_data$rate_offers)] <- 0
+
+# Temp variables for schools
+schools2018 <- model_data[model_data$year == 2018, ]
+schools2019 <- model_data[model_data$year == 2019, ]
+schools2020 <- model_data[model_data$year == 2020, ]
+schools2021 <- model_data[model_data$year == 2021, ]
 
 
 
-# store the 2021 schools
-schools2021 <- school_info[school_info$year == 2021, ]
-
-# Store the 2021 offers
-schooloffers2021 <-  subset(school_offers, select = c(`dbn`, `district`, `Postcode`, `Borough`, `url`, `Latitude`, `Longitude`, `2021_student_count`, `2021_testers_count`, `2021_offers_count`))
-
-schools2021 <- merge(schools2021, schooloffers2021, by.x = 'schooldbn', by.y='dbn')
-
-# Renaming columns
-names(schools2021)[names(schools2021) == '2021_student_count'] <- 'student_count'
-names(schools2021)[names(schools2021) == '2021_testers_count'] <- 'testers_count'
-names(schools2021)[names(schools2021) == '2021_offers_count'] <- 'offers_count'
 
 
-# Create rate_offers
-schools2021$rate_offers <- schools2021$`offers_count` / schools2021$`testers_count`
-
-# Set rows with rate_offers of NA to zero
-schools2021$rate_offers[is.na(schools2021$rate_offers)] <- 0
-
-
-
-p1 <- ggplot(data=schools2018, aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
-p2 <- ggplot(data=schools2018, aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
-p3 <- ggplot(data=schools2018, aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
-p4 <- ggplot(data=schools2018, aes(x=surveysafety, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
-p5 <- ggplot(data=schools2018, aes(x=accessibility, y=rate_offers)) + geom_boxplot() + geom_boxplot(outlier.colour = "red")
+p1 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p2 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p3 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p4 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=surveysafety, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p5 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=accessibility, y=rate_offers)) + geom_boxplot() + geom_boxplot(outlier.colour = "red")
 
 multiplot(p1, p2, p3, p4, p5, cols=3)
 
 
 
 # Cor plots
-ggcorr(schools2021[, c(6,7,8,9,10,18,19,26,27,28,29)], label = T, hjust= 0.9)
+ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
+
 ```  
 
 
 ```{r}
 set.seed(422)
-data_split <- initial_split(schools2018, prop = 0.8, strata = district.x)
+data_split <- initial_split(schools2018, prop = 0.8, strata = district)
 schools_train <- training(data_split)
 schools_test <- testing(data_split)
 
