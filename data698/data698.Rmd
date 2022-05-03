@@ -35,6 +35,7 @@ library(tidymodels)
 library(readr)
 library(rpart.plot)
 library(GGally)
+library(summarytools)
 
 # From http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
 # Multiple plot function
@@ -90,7 +91,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 # Methodology  
 
-## Exploratory Data Analysis  
+## Exploratory Data Analysis  {.tabset}
 
 
 ```{r}
@@ -166,10 +167,24 @@ schools2019 <- model_data[model_data$year == 2019, ]
 schools2020 <- model_data[model_data$year == 2020, ]
 schools2021 <- model_data[model_data$year == 2021, ]
 
+```  
+
+### 2018  
+
+```{r}
+print(dfSummary(schools2018, graph.magnif=0.75), method="render")
+```
+
+```{r}
+ggplot( head(arrange(schools2018, desc(rate_offers)), n = 25), aes(x= reorder(name, rate_offers), y=rate_offers) ) + 
+  geom_bar(stat = "identity", fill="#0033a1") +
+  coord_flip() +
+  theme_bw()
+
+```
 
 
-
-
+```{r}
 p1 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
 p2 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
 p3 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
@@ -186,9 +201,100 @@ ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
 ```  
 
 
+
+### 2019  
+
+```{r}
+print(dfSummary(schools2019, graph.magnif=0.75), method="render")
+```  
+
+```{r}
+ggplot( head(arrange(schools2019, desc(rate_offers)), n = 25), aes(x= reorder(name, rate_offers), y=rate_offers) ) + 
+  geom_bar(stat = "identity", fill="#0033a1") +
+  coord_flip() +
+  theme_bw()
+
+```
+
+```{r}
+p1 <- ggplot(data=model_data[model_data$year == 2019, ], aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p2 <- ggplot(data=model_data[model_data$year == 2019, ], aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p3 <- ggplot(data=model_data[model_data$year == 2019, ], aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p4 <- ggplot(data=model_data[model_data$year == 2019, ], aes(x=surveysafety, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p5 <- ggplot(data=model_data[model_data$year == 2019, ], aes(x=accessibility, y=rate_offers)) + geom_boxplot() + geom_boxplot(outlier.colour = "red")
+
+multiplot(p1, p2, p3, p4, p5, cols=3)
+
+
+
+# Cor plots
+ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
+
+```  
+
+### 2020  
+
+```{r}
+print(dfSummary(schools2020, graph.magnif=0.75), method="render")
+```  
+
+```{r}
+ggplot( head(arrange(schools2020, desc(rate_offers)), n = 25), aes(x= reorder(name, rate_offers), y=rate_offers) ) + 
+  geom_bar(stat = "identity", fill="#0033a1") +
+  coord_flip() +
+  theme_bw()
+
+```
+
+```{r}
+p1 <- ggplot(data=model_data[model_data$year == 2020, ], aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p2 <- ggplot(data=model_data[model_data$year == 2020, ], aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p3 <- ggplot(data=model_data[model_data$year == 2020, ], aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p4 <- ggplot(data=model_data[model_data$year == 2020, ], aes(x=surveysafety, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p5 <- ggplot(data=model_data[model_data$year == 2020, ], aes(x=accessibility, y=rate_offers)) + geom_boxplot() + geom_boxplot(outlier.colour = "red")
+
+multiplot(p1, p2, p3, p4, p5, cols=3)
+
+
+
+# Cor plots
+ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
+
+```  
+
+### 2021  
+
+```{r}
+print(dfSummary(schools2021, graph.magnif=0.75), method="render")
+```  
+
+```{r}
+ggplot( head(arrange(schools2021, desc(rate_offers)), n = 25), aes(x= reorder(name, rate_offers), y=rate_offers) ) + 
+  geom_bar(stat = "identity", fill="#0033a1") +
+  coord_flip() +
+  theme_bw()
+
+```
+
+```{r}
+p1 <- ggplot(data=model_data[model_data$year == 2021, ], aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p2 <- ggplot(data=model_data[model_data$year == 2021, ], aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p3 <- ggplot(data=model_data[model_data$year == 2021, ], aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p4 <- ggplot(data=model_data[model_data$year == 2021, ], aes(x=surveysafety, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p5 <- ggplot(data=model_data[model_data$year == 2021, ], aes(x=accessibility, y=rate_offers)) + geom_boxplot() + geom_boxplot(outlier.colour = "red")
+
+multiplot(p1, p2, p3, p4, p5, cols=3)
+
+
+
+# Cor plots
+ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
+
+```  
+
 ```{r}
 set.seed(422)
-data_split <- initial_split(schools2018, prop = 0.8, strata = district)
+data_split <- initial_split(model_data, prop = 0.8, strata = district)
 schools_train <- training(data_split)
 schools_test <- testing(data_split)
 
@@ -214,7 +320,7 @@ model
 
 ```{r}
 
-first_model <- lm(rate_offers ~ coursepassrate + elaprof + mathprof + surveysafety, data=schools2018)
+first_model <- lm(rate_offers ~ coursepassrate + elaprof + mathprof + surveysafety, data=schools_train)
 summary(first_model)
 
 # To see the performance metrics in an orderly data frame
@@ -229,17 +335,17 @@ firstmodelr_2 <- summary(first_model)$r.squared
 
 
 
-## Use the model on the 2019 data
+## Use the model on the testing data
 
 ## Create the prediction column based on the model
-schools2019$prediction <- predict(first_model, newdata=schools2019)
+schools_test$prediction <- predict(first_model, newdata=schools_test)
 
 ## Plot to compare the predictions to actual prediction on the x axis
-ggplot(schools2019, aes(x=prediction, y=rate_offers)) + geom_point() + geom_abline(color="blue")
+ggplot(schools_test, aes(x=prediction, y=rate_offers)) + geom_point() + geom_abline(color="blue")
 
 ## 
 GainCurvePlot(
-  schools2019,
+  schools_test,
   "prediction",
   "rate_offers",
   "First Model")
@@ -248,7 +354,7 @@ GainCurvePlot(
 
 
 # Get the correlation between the prediction and true outcome: rho and print it
-(rho <- cor(schools2019$prediction, schools2019$rate_offers))
+(rho <- cor(schools_test$prediction, schools_test$rate_offers))
 
 # Square rho: rho2 and print it
 (rho2 <- rho ^ 2)
@@ -257,19 +363,19 @@ GainCurvePlot(
 (rsq_glance <- glance(first_model)$r.squared)
 
 # Quasipoisson variance is greater than the mean for offers_count
-glm_second_model <- glm(`offers_count`  ~ `testers_count` + coursepassrate + elaprof + mathprof + surveysafety, data=schools2018, family=quasipoisson)
+glm_second_model <- glm(`offers_count`  ~ `testers_count` + coursepassrate + elaprof + mathprof + surveysafety, data=schools_train, family=quasipoisson)
 
 (perf <- glance(glm_second_model))
 (pseudoR2 <- 1 - perf$deviance/perf$null.deviance)
 
 
 # Calculate the RMSE
-schools2019 %>% 
+schools_test %>% 
   mutate(residual = prediction - offers_count) %>%
   summarize(rmse  = sqrt(mean(residual^2)))
 
 # Plot predictions vs cnt (pred on x-axis)
-ggplot(schools2019, aes(x = prediction, y = offers_count)) +
+ggplot(schools_test, aes(x = prediction, y = offers_count)) +
   geom_point() + 
   geom_abline(color = "darkblue")
 
