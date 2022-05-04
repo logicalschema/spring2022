@@ -15,15 +15,35 @@ number_sections: true
 theme: paper
 ---  
 
-# Abstract  
-Academic rigor is seen as a prized tenet in the culture of American meritocracy. Hard work, preparation, and grit are seen as genuine characteristics for a thriving and prosperous economy. With this belief, every year over 25,000 eighth grade students in New York City's public school system take the arduous Specialized High School Admissions Test (SHSAT) to gain admittance to eight prestigious specialized high schools: Bronx High School of Science, Brooklyn Latin School, Brooklyn Technical High School, the High School for Mathematics, Science and Engineering at City College of New York, High School of American Studies at Lehman College, Queens High School for the Sciences at York College, Staten Island Technical High School, and Stuyvesant High School. Yet with a population of over 1 million students, the largest system in the United States, is there equity in the system to allow admittance? It is the plan of this research to look at the data for New York City's school system for the years of 2018 to 2021 with regards to middle schools and the SHSAT. The system is divided into 32 school districts. This study will examine middle school data to see if there is a correlation between the number of offers given for specialized high school based on the SHSAT and an individual school's academic data, programs, and district assignment. It is the hope of this study to identify trends for improving success for schools and to, if any, to determine ways to improve schools that have few offers.
+# Assignment  
+
+You get to decide which dataset you want to work on. THe data set must be different You can work on a problem from your work, or something you are interested in. You may also obtain a dataset from sites such as Kaggle, Data.Gov, Census Bureau, USGS or other open data portal. 
+Select one of the methodologies studied in weeks 1-10, and one methodology from weeks 11-15 to apply in the new dataset selected. To complete this task:. 
+- describe the problem you are trying to solve.
+- describe your datasets and what you did to prepare the data for analysis. 
+- methodologies you used for analyzing the data
+- why you did what you did
+- make your conclusions from your analysis. Please be sure to address the business impact (it could be of any domain) of your solution. Your final presentation could be the traditional R file and essay, or it could be an oral presentation with the execution and explanation of your code, recorded on any platform of your choice (Youtube, Free Cam). If you select the presentation, it should be a 5 to 8 minutes recording. 
+
+## Problem
+
+The topic of selecting a middle school was a selfish one for me because my child is set to attend middle school in New York City. NYC's public school system is difficult to navigate and as a parent I sought to select a middle school with an increased likelihood of students attending a specialized high school. The main problem I wish to solve is to select a middle school for my child to attend with an increased likelihood of students attending a specialized high school.
+
+Every year over 25,000 eighth grade students in New York City's public school system take the arduous Specialized High School Admissions Test (SHSAT) to gain admittance to eight prestigious specialized high schools: Bronx High School of Science, Brooklyn Latin School, Brooklyn Technical High School, the High School for Mathematics, Science and Engineering at City College of New York, High School of American Studies at Lehman College, Queens High School for the Sciences at York College, Staten Island Technical High School, and Stuyvesant High School. Yet with a population of over 1 million students, the largest system in the United States, is there equity in the system to allow admittance? It is the plan of this research to look at the data for New York City's school system for the years of 2018 to 2021 with regards to middle schools and the SHSAT. The system is divided into 32 school districts. This study will examine middle school data to see if there is a correlation between the number of offers given for specialized high school based on the SHSAT and an individual school's academic data, programs, and district assignment. It is the hope of this study to identify trends for improving success for schools and to, if any, to determine ways to improve schools that have few offers.
+
+## Datasets  
+The following data sets were used for this homework.
+
+* [Map of NYC school Districts](https://data.cityofnewyork.us/Education/School-Districts/r8nu-ymqj)  
+* [NYC Open Data for Middle School Directories](https://data.cityofnewyork.us/browse?q=Middle%20School%20Directory&sortBy=relevance)  
+* [NYC Open Data for SHSAT Admission Offiers 2018-2021](https://data.cityofnewyork.us/browse?q=SHSAT&sortBy=relevance)
+
+## Reasoning  
+Looking at the NYC Open Data, the data for middle schools proved to only be viable for 2018 to 2021. In addition, the data sources would report a range of 0-5 for offers. Hence, if a middle school received 0 offers for students, the row would have a value of "0 to 5". I decided to list such values as 0 in addition to removing middle schools with "NA" values for student counts: the reason is that in some years the middle school may not have reported the data or did not exist.  
+Later in the exploration of models, I found that issues with overdispersion and would need to employ zero-inflation modelling methods.
 
 
-# Keywords  
-Regression, Standardized Testing, Feature Selection, Public Education
-
-
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(dplyr)
 library(sigr)
@@ -98,17 +118,16 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 ```
 
-# Literature Review  
-
 
 # Methodology  
+In visualizing and exploring the data, I wanted to be able to identify high performing middle schools by examining them on a map and plotting their SHSAT offers (offers made by specialized high schools to students). By also creating some feature variables, I would examine a correlation matrix for the variables and see to identify what makes a good middle school for producing students with a high probability of being given an offer by a specialized high school. Next, I would use different models, a decision tree, multinomial linear regression, and knn clustering to see if there are possible policies that can be implemented to increase the likelihood of students receiving offers for specialized high schools. 
 
 ## Exploratory Data Analysis  {.tabset}
 
 
 ```{r}
 # School information: Note: only 2018-2021 are available
-school_info <- read_csv('data/2018-2021_school_information.csv')
+school_info <- read_csv('https://raw.githubusercontent.com/logicalschema/spring2022/main/data622/hw4/data/2018-2021_school_information.csv')
 
 # Remove NA values for total_students, course pass rate, elaprof, and mathprof
 school_info <- school_info %>% drop_na(totalstudents)
@@ -129,7 +148,7 @@ school_info$shsat_prep <- ifelse(str_detect(school_info$electiveclasses, "Specia
 
 # School offers have the offers for middle schools: Note 2016-2021 are available but for the previous data set only 2018-2021 are available
 # Remove rows with NA values
-school_offers <- read_csv('data/school_offers.csv')
+school_offers <- read_csv('https://raw.githubusercontent.com/logicalschema/spring2022/main/data622/hw4/data/school_offers.csv')
 school_offers$Postcode <- as.character(school_offers$Postcode)
 school_offers <- subset(school_offers, select = -c(`name`, `telephone`, `address`, `2016_student_count`,                                  `2016_testers_count`,`2016_offers_count`,`2017_student_count`,`2017_testers_count`,`2017_offers_count`))
 school_offers <- na.omit(school_offers) 
