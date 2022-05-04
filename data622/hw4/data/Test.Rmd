@@ -1,0 +1,91 @@
+---
+title: "Test"
+author: "Sung Lee"
+date: '2022-03-28'
+output: html_document
+---
+
+# Introduction  
+
+Getting back to remembering leaflet  
+
+```{r}
+library(maps)
+library(maptools)
+library(leaflet)
+library(sf)
+library(tidyverse)
+library(dplyr)
+library(plotly)
+districts <- read_sf('schooldistricts.geojson')
+districts$school_dist  <- as.numeric(districts$school_dist)
+
+pal <- colorQuantile("YlGn", NULL, n = 4)
+# Randomly generate values between 0 and 1 for 33 rows
+t <- runif(33)
+# Create a dataframe using the districts and random values
+v <- data.frame(districts$school_dist, t)
+
+district_popup <- paste0("<strong>School District: </strong>", v$districts.school_dist, "<br>", "<strong>Proportion: </strong>", v$t)
+
+map <- leaflet() %>%
+     addTiles() %>%
+     addProviderTiles(providers$CartoDB.Positron) %>%
+     setView(lng = -73.935242, lat = 40.730610, zoom = 9) %>%
+     addPolygons(data=districts, fillColor=~pal(t), color="darkgrey", weight=1, popup=district_popup)
+map
+```
+
+
+
+```{r}
+
+
+school_info <- read_csv('2018-2021_school_information.csv')
+
+# School offers have the offers for middle schools
+school_offers <- read_csv('school_offers.csv')
+school_offers$Postcode <- as.character(school_offers$Postcode)
+school_offers <- subset(school_offers, select = -c(`name`, `telephone`, `address`, `2016_student_count`, `2016_testers_count`,`2016_offers_count`,`2017_student_count`,`2017_testers_count`,`2017_offers_count`))
+
+# Drop rows that have totalstudents == NA
+school_info <- school_info %>% drop_na(totalstudents )
+
+# store the 2018 schools
+schools2018 <- school_info[school_info$year == 2018, ]
+
+# Store the 2018 offers
+schooloffers2018 <-  subset(school_offers, select = c(`dbn`, `district`, `Postcode`, `Borough`, `url`, `Latitude`, `Longitude`, `2018_student_count`, `2018_testers_count`, `2018_offers_count`))
+
+# Merge the 2018
+joindataset <- merge(schools2018, schooloffers2018, by.x = 'schooldbn', by.y='dbn')
+
+# Organizes by districts
+by_district <-  schooloffers2018  %>% 
+    filter(!is.na(`2018_student_count`)) %>%
+    filter(!is.na(`2018_testers_count`)) %>%
+    filter(!is.na(`2018_offers_count`)) %>%
+    group_by(district) %>%
+    summarise(total_students = sum(`2018_student_count`),
+              total_testers = sum(`2018_testers_count`),
+              total_offers = sum(`2018_offers_count`))
+
+m <- data.frame(by_district)
+m$average_acceptance <- m$total_offers / m$total_testers
+temp <- select(m, c(district, average_acceptance))
+
+districts_number <- districts$school_dist
+districts_number <- data.frame(districts_number)
+temp2 <- merge(districts_number, temp, by.x = 'districts_number', by.y='district')
+
+district_popup <- paste0("<strong>School District: </strong>", temp2$districts_number, "<br>", "<strong>Proportion: </strong>", temp2$average_acceptance)
+
+map <- leaflet() %>%
+     addTiles() %>%
+     addProviderTiles(providers$CartoDB.Positron) %>%
+     setView(lng = -73.935242, lat = 40.730610, zoom = 9) %>%
+     addPolygons(data=districts, fillColor=~pal(temp2$average_acceptance), color="darkgrey", weight=1, popup=district_popup)
+map
+
+
+```

@@ -1,0 +1,428 @@
+---
+title: "Data 622 Homework 4"
+author: "Sung Lee"
+date: '2022-05-04'
+output: 
+  html_document:
+    code_folding: show
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    smooth_scroll: false
+    toc_depth: 3
+number_sections: true
+theme: paper
+---  
+
+# Abstract  
+Academic rigor is seen as a prized tenet in the culture of American meritocracy. Hard work, preparation, and grit are seen as genuine characteristics for a thriving and prosperous economy. With this belief, every year over 25,000 eighth grade students in New York City's public school system take the arduous Specialized High School Admissions Test (SHSAT) to gain admittance to eight prestigious specialized high schools: Bronx High School of Science, Brooklyn Latin School, Brooklyn Technical High School, the High School for Mathematics, Science and Engineering at City College of New York, High School of American Studies at Lehman College, Queens High School for the Sciences at York College, Staten Island Technical High School, and Stuyvesant High School. Yet with a population of over 1 million students, the largest system in the United States, is there equity in the system to allow admittance? It is the plan of this research to look at the data for New York City's school system for the years of 2018 to 2021 with regards to middle schools and the SHSAT. The system is divided into 32 school districts. This study will examine middle school data to see if there is a correlation between the number of offers given for specialized high school based on the SHSAT and an individual school's academic data, programs, and district assignment. It is the hope of this study to identify trends for improving success for schools and to, if any, to determine ways to improve schools that have few offers.
+
+
+# Keywords  
+Regression, Standardized Testing, Feature Selection, Public Education
+
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(dplyr)
+library(sigr)
+library(broom)
+library(ggplot2)
+library(WVPlots)
+library(corrplot)
+library(tidymodels)
+library(readr)
+library(rpart.plot)
+library(GGally)
+library(summarytools)
+library(MASS)
+library(AER)
+
+# Used for zero-inflation model
+library(pscl)
+
+# Used to test for zero inflation
+library(performance)
+
+# 
+library(MuMIn)
+
+
+# From http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+ if (numPlots==1) {
+    print(plots[[1]])
+
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+
+```
+
+# Literature Review  
+
+
+# Methodology  
+
+## Exploratory Data Analysis  {.tabset}
+
+
+```{r}
+# School information: Note: only 2018-2021 are available
+school_info <- read_csv('data/2018-2021_school_information.csv')
+
+# Remove NA values for total_students, course pass rate, elaprof, and mathprof
+school_info <- school_info %>% drop_na(totalstudents)
+school_info <- school_info %>% drop_na(coursepassrate)
+school_info <- school_info %>% drop_na(elaprof)
+school_info <- school_info %>% drop_na(mathprof)
+
+# Convert totalstudents to numberical
+school_info$totalstudents <- as.numeric(as.character(school_info$totalstudents))
+
+
+# Potential features
+## Dual Program feature: If the school has a dual language program
+school_info$dual_program <- ifelse(str_detect(school_info$ellprograms, "Dual") & (is.na(school_info$ellprograms) == FALSE), 1, 0)
+
+## Specialized Test Prep feature: If the school has a specialized high school prep class 
+school_info$shsat_prep <- ifelse(str_detect(school_info$electiveclasses, "Specialized High School Test") & (is.na(school_info$electiveclasses) == FALSE), 1, 0)
+
+# School offers have the offers for middle schools: Note 2016-2021 are available but for the previous data set only 2018-2021 are available
+# Remove rows with NA values
+school_offers <- read_csv('data/school_offers.csv')
+school_offers$Postcode <- as.character(school_offers$Postcode)
+school_offers <- subset(school_offers, select = -c(`name`, `telephone`, `address`, `2016_student_count`,                                  `2016_testers_count`,`2016_offers_count`,`2017_student_count`,`2017_testers_count`,`2017_offers_count`))
+school_offers <- na.omit(school_offers) 
+
+temp1 <- subset(school_info, select = c(`district`, `schooldbn`, `name`, `year`, `coursepassrate`, `accessibility`, `elaprof`, `mathprof`, `totalstudents`, `surveysafety`,`dual_program`, `shsat_prep`))
+
+
+temp2018 <- merge(temp1[temp1$year == 2018, ], subset(school_offers, select = c(`dbn`, `2018_student_count`, `2018_testers_count`, `2018_offers_count`)), by.x = 'schooldbn', by.y='dbn')
+
+names(temp2018)[names(temp2018) == '2018_student_count'] <- 'student_count'
+names(temp2018)[names(temp2018) == '2018_testers_count'] <- 'testers_count'
+names(temp2018)[names(temp2018) == '2018_offers_count'] <- 'offers_count'
+
+
+temp2019 <- merge(temp1[temp1$year == 2019, ], subset(school_offers, select = c(`dbn`, `2019_student_count`, `2019_testers_count`, `2019_offers_count`)), by.x = 'schooldbn', by.y='dbn')
+
+names(temp2019)[names(temp2019) == '2019_student_count'] <- 'student_count'
+names(temp2019)[names(temp2019) == '2019_testers_count'] <- 'testers_count'
+names(temp2019)[names(temp2019) == '2019_offers_count'] <- 'offers_count'
+
+temp2020 <- merge(temp1[temp1$year == 2020, ], subset(school_offers, select = c(`dbn`, `2020_student_count`, `2020_testers_count`, `2020_offers_count`)), by.x = 'schooldbn', by.y='dbn')
+
+names(temp2020)[names(temp2020) == '2020_student_count'] <- 'student_count'
+names(temp2020)[names(temp2020) == '2020_testers_count'] <- 'testers_count'
+names(temp2020)[names(temp2020) == '2020_offers_count'] <- 'offers_count'
+
+temp2021 <- merge(temp1[temp1$year == 2021, ], subset(school_offers, select = c(`dbn`, `2021_student_count`, `2021_testers_count`, `2021_offers_count`)), by.x = 'schooldbn', by.y='dbn')
+
+names(temp2021)[names(temp2021) == '2021_student_count'] <- 'student_count'
+names(temp2021)[names(temp2021) == '2021_testers_count'] <- 'testers_count'
+names(temp2021)[names(temp2021) == '2021_offers_count'] <- 'offers_count'
+
+
+# Create model data and concatenate the temp data frames
+model_data <- rbind(temp2018, temp2019)
+model_data <- rbind(model_data, temp2020)
+model_data <- rbind(model_data, temp2021)
+
+
+# Create rate_offers: number of offers / number of testers
+model_data$rate_offers <- model_data$offers_count / model_data$testers_count
+model_data$rate_offers[is.na(model_data$rate_offers)] <- 0
+
+# Temp variables for schools
+schools2018 <- model_data[model_data$year == 2018, ]
+schools2019 <- model_data[model_data$year == 2019, ]
+schools2020 <- model_data[model_data$year == 2020, ]
+schools2021 <- model_data[model_data$year == 2021, ]
+
+```  
+
+### 2018  
+
+```{r}
+print(dfSummary(schools2018, graph.magnif=0.75), method="render")
+```
+
+```{r}
+ggplot( head(arrange(schools2018, desc(rate_offers)), n = 25), aes(x= reorder(name, rate_offers), y=rate_offers) ) + 
+  geom_bar(stat = "identity", fill="#0033a1") +
+  coord_flip() +
+  theme_bw()
+
+```
+
+
+```{r}
+p1 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p2 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p3 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p4 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=surveysafety, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p5 <- ggplot(data=model_data[model_data$year == 2018, ], aes(x=accessibility, y=rate_offers)) + geom_boxplot() + geom_boxplot(outlier.colour = "red")
+
+multiplot(p1, p2, p3, p4, p5, cols=3)
+
+
+
+# Cor plots
+ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
+
+```  
+
+
+
+### 2019  
+
+```{r}
+print(dfSummary(schools2019, graph.magnif=0.75), method="render")
+```  
+
+```{r}
+ggplot( head(arrange(schools2019, desc(rate_offers)), n = 25), aes(x= reorder(name, rate_offers), y=rate_offers) ) + 
+  geom_bar(stat = "identity", fill="#0033a1") +
+  coord_flip() +
+  theme_bw()
+
+```
+
+```{r}
+p1 <- ggplot(data=model_data[model_data$year == 2019, ], aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p2 <- ggplot(data=model_data[model_data$year == 2019, ], aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p3 <- ggplot(data=model_data[model_data$year == 2019, ], aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p4 <- ggplot(data=model_data[model_data$year == 2019, ], aes(x=surveysafety, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p5 <- ggplot(data=model_data[model_data$year == 2019, ], aes(x=accessibility, y=rate_offers)) + geom_boxplot() + geom_boxplot(outlier.colour = "red")
+
+multiplot(p1, p2, p3, p4, p5, cols=3)
+
+
+
+# Cor plots
+ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
+
+```  
+
+### 2020  
+
+```{r}
+print(dfSummary(schools2020, graph.magnif=0.75), method="render")
+```  
+
+```{r}
+ggplot( head(arrange(schools2020, desc(rate_offers)), n = 25), aes(x= reorder(name, rate_offers), y=rate_offers) ) + 
+  geom_bar(stat = "identity", fill="#0033a1") +
+  coord_flip() +
+  theme_bw()
+
+```
+
+```{r}
+p1 <- ggplot(data=model_data[model_data$year == 2020, ], aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p2 <- ggplot(data=model_data[model_data$year == 2020, ], aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p3 <- ggplot(data=model_data[model_data$year == 2020, ], aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p4 <- ggplot(data=model_data[model_data$year == 2020, ], aes(x=surveysafety, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p5 <- ggplot(data=model_data[model_data$year == 2020, ], aes(x=accessibility, y=rate_offers)) + geom_boxplot() + geom_boxplot(outlier.colour = "red")
+
+multiplot(p1, p2, p3, p4, p5, cols=3)
+
+
+
+# Cor plots
+ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
+
+```  
+
+### 2021  
+
+```{r}
+print(dfSummary(schools2021, graph.magnif=0.75), method="render")
+```  
+
+```{r}
+ggplot( head(arrange(schools2021, desc(rate_offers)), n = 25), aes(x= reorder(name, rate_offers), y=rate_offers) ) + 
+  geom_bar(stat = "identity", fill="#0033a1") +
+  coord_flip() +
+  theme_bw()
+
+```
+
+```{r}
+p1 <- ggplot(data=model_data[model_data$year == 2021, ], aes(x=coursepassrate, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p2 <- ggplot(data=model_data[model_data$year == 2021, ], aes(x=elaprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p3 <- ggplot(data=model_data[model_data$year == 2021, ], aes(x=mathprof, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p4 <- ggplot(data=model_data[model_data$year == 2021, ], aes(x=surveysafety, y=rate_offers)) + geom_point(alpha=0.5) + geom_jitter() 
+p5 <- ggplot(data=model_data[model_data$year == 2021, ], aes(x=accessibility, y=rate_offers)) + geom_boxplot() + geom_boxplot(outlier.colour = "red")
+
+multiplot(p1, p2, p3, p4, p5, cols=3)
+
+
+
+# Cor plots
+ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
+
+```  
+
+```{r}
+set.seed(422)
+data_split <- initial_split(model_data, prop = 0.8, strata = district)
+schools_train <- training(data_split)
+schools_test <- testing(data_split)
+
+model_spec <- decision_tree() %>%
+  set_mode("regression") %>%
+  set_engine("rpart")
+
+model_spec
+
+# Train the model
+model <- model_spec %>%
+  fit(formula = offers_count ~ testers_count + student_count + elaprof + mathprof + coursepassrate,
+      data = schools_train)
+
+# Information about the model
+model
+
+```
+
+
+# Experimentation & Results  
+
+
+```{r}
+
+first_model <- lm(offers_count ~ coursepassrate + elaprof + mathprof + surveysafety, data=schools_train)
+summary(first_model)
+
+# To see the performance metrics in an orderly data frame
+glance(first_model)
+
+# To see the R-squared
+wrapFTest(first_model)
+
+## Evaluation R-2
+firstmodelr_2 <- summary(first_model)$r.squared
+
+
+
+
+## Use the model on the testing data
+
+## Create the prediction column based on the model
+schools_test$prediction <- predict(first_model, newdata=schools_test)
+
+## Plot to compare the predictions to actual prediction on the x axis
+ggplot(schools_test, aes(x=prediction, y=offers_count)) + geom_point() + geom_abline(color="blue")
+
+## 
+GainCurvePlot(
+  schools_test,
+  "prediction",
+  "offers_count",
+  "First Model")
+
+## The wizard curve does not quite overlap with the prediction curve so this is not a good model
+
+
+# Get the correlation between the prediction and true outcome: rho and print it
+(rho <- cor(schools_test$prediction, schools_test$offers_count))
+
+# Square rho: rho2 and print it
+(rho2 <- rho ^ 2)
+
+# Get R-squared from glance and print it
+(rsq_glance <- glance(first_model)$r.squared)
+
+# Quasipoisson variance is greater than the mean for offers_count
+glm_second_model <- glm(offers_count  ~ testers_count + coursepassrate + elaprof + mathprof + surveysafety, data=schools_train, family=quasipoisson)
+
+(perf <- glance(glm_second_model))
+(pseudoR2 <- 1 - perf$deviance/perf$null.deviance)
+
+
+# Calculate the RMSE
+schools_test %>% 
+  mutate(residual = prediction - offers_count) %>%
+  summarize(rmse  = sqrt(mean(residual^2)))
+
+# Plot predictions vs cnt (pred on x-axis)
+ggplot(schools_test, aes(x = prediction, y = offers_count)) +
+  geom_point() + 
+  geom_abline(color = "darkblue")
+
+```  
+
+```{r}
+
+# Zero Inflation test for glm_second_model
+check_zeroinflation(glm_second_model)
+
+zip_model <- zeroinfl(offers_count  ~ testers_count + coursepassrate + elaprof + mathprof + surveysafety, data = schools_train)
+
+summary(zip_model)
+```  
+
+
+```{r}
+AIC(first_model, glm_second_model, zip_model)
+
+
+```
+
+## Correlation
+
+
+
+# Results  
+
+
+# Summary  
+
+
+# Appendix
+
+
+
+
+

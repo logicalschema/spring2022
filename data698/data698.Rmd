@@ -36,6 +36,18 @@ library(readr)
 library(rpart.plot)
 library(GGally)
 library(summarytools)
+library(MASS)
+library(AER)
+
+# Used for zero-inflation model
+library(pscl)
+
+# Used to test for zero inflation
+library(performance)
+
+# 
+library(MuMIn)
+
 
 # From http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
 # Multiple plot function
@@ -320,7 +332,7 @@ model
 
 ```{r}
 
-first_model <- lm(rate_offers ~ coursepassrate + elaprof + mathprof + surveysafety, data=schools_train)
+first_model <- lm(offers_count ~ coursepassrate + elaprof + mathprof + surveysafety, data=schools_train)
 summary(first_model)
 
 # To see the performance metrics in an orderly data frame
@@ -341,20 +353,20 @@ firstmodelr_2 <- summary(first_model)$r.squared
 schools_test$prediction <- predict(first_model, newdata=schools_test)
 
 ## Plot to compare the predictions to actual prediction on the x axis
-ggplot(schools_test, aes(x=prediction, y=rate_offers)) + geom_point() + geom_abline(color="blue")
+ggplot(schools_test, aes(x=prediction, y=offers_count)) + geom_point() + geom_abline(color="blue")
 
 ## 
 GainCurvePlot(
   schools_test,
   "prediction",
-  "rate_offers",
+  "offers_count",
   "First Model")
 
 ## The wizard curve does not quite overlap with the prediction curve so this is not a good model
 
 
 # Get the correlation between the prediction and true outcome: rho and print it
-(rho <- cor(schools_test$prediction, schools_test$rate_offers))
+(rho <- cor(schools_test$prediction, schools_test$offers_count))
 
 # Square rho: rho2 and print it
 (rho2 <- rho ^ 2)
@@ -363,7 +375,7 @@ GainCurvePlot(
 (rsq_glance <- glance(first_model)$r.squared)
 
 # Quasipoisson variance is greater than the mean for offers_count
-glm_second_model <- glm(`offers_count`  ~ `testers_count` + coursepassrate + elaprof + mathprof + surveysafety, data=schools_train, family=quasipoisson)
+glm_second_model <- glm(offers_count  ~ testers_count + coursepassrate + elaprof + mathprof + surveysafety, data=schools_train, family=quasipoisson)
 
 (perf <- glance(glm_second_model))
 (pseudoR2 <- 1 - perf$deviance/perf$null.deviance)
@@ -379,9 +391,25 @@ ggplot(schools_test, aes(x = prediction, y = offers_count)) +
   geom_point() + 
   geom_abline(color = "darkblue")
 
-
-
 ```  
+
+```{r}
+
+# Zero Inflation test for glm_second_model
+check_zeroinflation(glm_second_model)
+
+zip_model <- zeroinfl(offers_count  ~ testers_count + coursepassrate + elaprof + mathprof + surveysafety, data = schools_train)
+
+summary(zip_model)
+```  
+
+
+```{r}
+AIC(first_model, glm_second_model, zip_model)
+
+
+```
+
 ## Correlation
 
 
