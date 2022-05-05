@@ -103,12 +103,15 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 # Methodology  
 
-## Exploratory Data Analysis  {.tabset}
+## Exploratory Data Analysis  
+
+### Years 2018 to 2021 {.tabset}  
+The following code imports the csv files from GitHub. The csv files were cleaned beforehand.
 
 
 ```{r}
 # School information: Note: only 2018-2021 are available
-school_info <- read_csv('data/2018-2021_school_information.csv')
+school_info <- read_csv('https://raw.githubusercontent.com/logicalschema/spring2022/main/data698/data/2018-2021_school_information.csv')
 
 # Remove NA values for total_students, course pass rate, elaprof, and mathprof
 school_info <- school_info %>% drop_na(totalstudents)
@@ -129,7 +132,7 @@ school_info$shsat_prep <- ifelse(str_detect(school_info$electiveclasses, "Specia
 
 # School offers have the offers for middle schools: Note 2016-2021 are available but for the previous data set only 2018-2021 are available
 # Remove rows with NA values
-school_offers <- read_csv('data/school_offers.csv')
+school_offers <- read_csv('https://raw.githubusercontent.com/logicalschema/spring2022/main/data698/data/school_offers.csv')
 school_offers$Postcode <- as.character(school_offers$Postcode)
 school_offers <- subset(school_offers, select = -c(`name`, `telephone`, `address`, `2016_student_count`,                                  `2016_testers_count`,`2016_offers_count`,`2017_student_count`,`2017_testers_count`,`2017_offers_count`))
 school_offers <- na.omit(school_offers) 
@@ -181,7 +184,7 @@ schools2021 <- model_data[model_data$year == 2021, ]
 
 ```  
 
-### 2018  
+#### 2018  
 
 ```{r}
 print(dfSummary(schools2018, graph.magnif=0.75), method="render")
@@ -214,7 +217,7 @@ ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
 
 
 
-### 2019  
+#### 2019  
 
 ```{r}
 print(dfSummary(schools2019, graph.magnif=0.75), method="render")
@@ -244,7 +247,7 @@ ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
 
 ```  
 
-### 2020  
+#### 2020  
 
 ```{r}
 print(dfSummary(schools2020, graph.magnif=0.75), method="render")
@@ -274,7 +277,7 @@ ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
 
 ```  
 
-### 2021  
+#### 2021  
 
 ```{r}
 print(dfSummary(schools2021, graph.magnif=0.75), method="render")
