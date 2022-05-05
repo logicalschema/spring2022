@@ -15,6 +15,10 @@ number_sections: true
 theme: paper
 ---  
 
+[RPubs Link](https://rpubs.com/logicalschema/data622_hw4)  
+
+[GitHub Link](https://github.com/logicalschema/spring2022/tree/main/data622/hw4)
+
 # Assignment  
 
 You get to decide which dataset you want to work on. THe data set must be different You can work on a problem from your work, or something you are interested in. You may also obtain a dataset from sites such as Kaggle, Data.Gov, Census Bureau, USGS or other open data portal. 
@@ -64,10 +68,6 @@ library(pscl)
 
 # Used to test for zero inflation
 library(performance)
-
-# 
-library(MuMIn)
-
 
 # From http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
 # Multiple plot function
@@ -412,7 +412,9 @@ mae_decisiontree_model <- MAE(schools_test$offers_count, predictions$.pred)
 The mean absolute error of the decision tree is **`r mae_decisiontree_model`**.
 
 
+## First Model  
 
+This first model looks to build a traditional regression using the same variables as the decision tree.
 
 ```{r}
 
@@ -429,83 +431,101 @@ wrapFTest(first_model)
 firstmodelr_2 <- summary(first_model)$r.squared
 
 
-
-
 ## Use the model on the testing data
 
 ## Create the prediction column based on the model
-schools_test$prediction <- predict(first_model, newdata=schools_test)
+schools_test$p1 <- predict(first_model, newdata=schools_test)
 
 ## Plot to compare the predictions to actual prediction on the x axis
-ggplot(schools_test, aes(x=prediction, y=offers_count)) + geom_point() + geom_abline(color="blue")
+ggplot(schools_test, aes(x=p1, y=offers_count)) + geom_point() + geom_abline(color="blue")
 
-## 
-GainCurvePlot(
-  schools_test,
-  "prediction",
-  "offers_count",
-  "First Model")
-
-## The wizard curve does not quite overlap with the prediction curve so this is not a good model
-
-
-# Get the correlation between the prediction and true outcome: rho and print it
-(rho <- cor(schools_test$prediction, schools_test$offers_count))
-
-# Square rho: rho2 and print it
-(rho2 <- rho ^ 2)
+# Calculate the RMSE
+first_rmse <- schools_test %>% 
+  mutate(residual = p1 - offers_count) %>%
+  summarize(rmse  = sqrt(mean(residual^2)))
 
 # Get R-squared from glance and print it
 (rsq_glance <- glance(first_model)$r.squared)
+```
+The first model's RMSE is `r first_rmse`
 
+## Second Model  
+
+This second model uses quasipoisson for the regression because the variance is greater than the mean for `offers_count`. Because this is a quasipoisson, an AIC score cannot be generated. However, a RMSE score is created.
+
+```{r}
 # Quasipoisson variance is greater than the mean for offers_count
 glm_second_model <- glm(offers_count  ~ testers_count + coursepassrate + elaprof + mathprof + surveysafety, data=schools_train, family=quasipoisson)
 
-(perf <- glance(glm_second_model))
-(pseudoR2 <- 1 - perf$deviance/perf$null.deviance)
+summary(glm_second_model)
+
+schools_test$p2 <- predict(glm_second_model, newdata=schools_test)
 
 
 # Calculate the RMSE
-schools_test %>% 
-  mutate(residual = prediction - offers_count) %>%
+second_rmse <- schools_test %>% 
+  mutate(residual = p2 - offers_count) %>%
   summarize(rmse  = sqrt(mean(residual^2)))
 
 # Plot predictions vs cnt (pred on x-axis)
-ggplot(schools_test, aes(x = prediction, y = offers_count)) +
+ggplot(schools_test, aes(x = p2, y = offers_count)) +
   geom_point() + 
   geom_abline(color = "darkblue")
 
 ```  
 
-```{r}
+The second model's RMSE is `r second_rmse`  
 
+
+## Third Model  
+For this third model, I will use a zero-inflated model. Firstly, a test is done to see if one is needed. Secondly, if one is needed, then a third model is created.
+
+
+```{r}
 # Zero Inflation test for glm_second_model
 check_zeroinflation(glm_second_model)
 
 zip_model <- zeroinfl(offers_count  ~ testers_count + coursepassrate + elaprof + mathprof + surveysafety, data = schools_train)
 
+
+schools_test$p3 <- predict(zip_model, newdata=schools_test)
+
+
+# Calculate the RMSE
+third_rmse <- schools_test %>% 
+  mutate(residual = p2 - offers_count) %>%
+  summarize(rmse  = sqrt(mean(residual^2)))
+
+# Plot predictions vs cnt (pred on x-axis)
+ggplot(schools_test, aes(x = p2, y = offers_count)) +
+  geom_point() + 
+  geom_abline(color = "darkblue")
+
 summary(zip_model)
 ```  
 
-
-```{r}
-AIC(first_model, glm_second_model, zip_model)
-
-
-```
-
-## Correlation
+The third model's RMSE is `r third_rmse`
 
 
 
 # Results  
+Though the first model has the lowest RMSE, the zero-inflated model has a better AIC measure.
+
+```{r}
+AIC(first_model, glm_second_model, zip_model)
+
+```
+
+With this and the importance from the summary for the model, the variables `elaprof` and `mathprof`. According to the data:
+
+* `elaprof`:	Percent of students proficient in ELA
+* `mathprof`:	Percent of students proficient in math  
 
 
 # Summary  
+Because of the strong correlations between proficiency in ELA and math, I would recommend schools work to improve these proficiencies to have a better success rate for obtaining offers from Specialized High Schools (including raising awareness of the examinations and encouraging students to take them). Overall, I selected a middle school with these high variables close to my neighborhood.
 
-
-# Appendix
-
+Additional research can be done to look at demographics and economic data, but overall, to improve proficiencies in ELA and mathematics seem to be a viable way to go for preparing students and middle schools
 
 
 
