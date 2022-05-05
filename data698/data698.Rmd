@@ -421,8 +421,6 @@ This section will build a traditional linear regression model. The training data
 first_model <- lm(offers_count ~ testers_count + student_count + elaprof + mathprof + coursepassrate, data=schools_train)
 summary(first_model)
 
-# To see the performance metrics in an orderly data frame
-glance(first_model)
 ```  
 
 ### Performance of First Model  
@@ -453,26 +451,26 @@ first_rmse <- schools_test %>%
   summarize(rmse  = sqrt(mean(residual^2)))
 
 ```  
-The first model's RMSE is `r first_rmse`
+The first model's RMSE is `r first_rmse `
 
 ***
 
 ## Second Model  
 
-This second model is constructed using a Quasi-Poisson regression. These specific models are used when a count variable is overly dispersed.
+This second model is constructed using a Quasi-Poisson regression. These specific models are used when a count variable is overly dispersed. One quick test is to see if the variance (**`r var(schools_train$offers_count)`**) is greater than the mean (**`r mean(schools_train$offers_count)`**) for `offers_count`.
 
 
 ```{r}
 # Quasipoisson variance is greater than the mean for offers_count
 glm_second_model <- glm(offers_count  ~ testers_count + student_count + elaprof + mathprof + coursepassrate, data=schools_train, family=quasipoisson)
 
-glance(glm_second_model)
+summary(glm_second_model)
 
 ## Create the prediction column based on the model
 schools_test$p2 <- predict(glm_second_model, newdata=schools_test)
 
 # Calculate the RMSE
-schools_test %>% 
+second_rmse <- schools_test %>% 
   mutate(residual = p2 - offers_count) %>%
   summarize(rmse  = sqrt(mean(residual^2)))
 
@@ -490,6 +488,10 @@ GainCurvePlot(
 
 ```  
 
+The second model's RMSE is `r second_rmse `
+
+***
+
 ```{r}
 
 # Zero Inflation test for glm_second_model
@@ -503,8 +505,6 @@ summary(zip_model)
 
 ```{r}
 AIC(first_model, glm_second_model, zip_model)
-
-
 ```
 
 ## Correlation
