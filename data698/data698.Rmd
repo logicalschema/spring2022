@@ -23,7 +23,57 @@ Academic rigor is seen as a prized tenet in the culture of American meritocracy.
 Regression, Standardized Testing, Feature Selection, Public Education
 
 
-```{r, echo=FALSE}
+
+
+# Literature Review  
+The SHSAT and the lack of diversity in NYC Specialized High Schools have been a source of incredible controversy for the past number of years. Different politicians and activists have advocated for various approaches to the lack of diversity in NYC's Specialized High Schools. Here is a quote from the Brookings Institution's [article](https://www.brookings.edu/research/elite-or-elitist-lessons-for-colleges-from-selective-high-schools/) "Elite of elitist? Lessons for colleges from selective high schools":  
+
+> The question underlying these debates is: what constitutes fair admissions criteria? Supporters of a narrowly meritocratic approach argue it is unfair to deny, say, an Asian-American student a seat in one of these prestigious schools, in favor of, say, a Black student who scored lower on the test. Those who support a more inclusive policy argue that it is fairer to take into account socioeconomic and/or racial background in making admissions decisions.^[https://www.brookings.edu/research/elite-or-elitist-lessons-for-colleges-from-selective-high-schools/]  
+
+> While the SHS in some cities (Milwaukee, Philadelphia) are more representative of the demographics of their overall districts, disparities exist throughout each of the SHS systems. Some cities—particularly Boston and New York—have the least representative SHS student populations in terms of race, while others such as Baltimore, Louisville, and DC face greater challenges in terms of economic representation. 
+
+Attempts have been made to provide greater access for underrepresented groups, here is a quote from the same article:  
+
+> There are more modest efforts underway to improve representation in New York’s SHS, however. The Discovery program offers a summer enrichment program for eligible students who take the SHSAT and score just below the cutoff. To be eligible for Discovery, students must be from a low-income household, have scored within a certain range below the cutoff score, and attend a high-poverty high school. Students who participate and complete the program requirements are then admitted to one of the specialized high schools. By the summer of 2020, 20 percent of seats at each specialized high school will be reserved for Discovery program participants. However, the impact on racial diversity is likely to be muted. More than half of the school places offered to Discovery participants in 2019 went to Asian American students.  
+
+Here are some of the proposals:
+*	Require all students to take the entrance exams for selective high schools. Currently, there are many gaps in the racial and socioeconomic makeup of the students who choose to take the admissions exams in the first place. These gaps may be due to a lack of sufficient information within households, or other barriers, such as limited transportation to the testing location. Instituting a school day in which the entrance exam is administered to all middle school students may increase the number of students with qualifying scores from diverse backgrounds.  
+
+*	Replace the unique tests schools use for admission with scores on state or national tests. Many selective high school entrance exams, including the ISEE in Boston and the SHSAT in New York, test students on curriculum that has not yet been taught in school. As a result, the students who perform best on the exam often are those who had access to prep courses or tutoring. In Boston, many Black, Hispanic, and low-income students perform well on the fifth-grade standardized test, but just a year later do not score well on the ISEE exam. This suggests that using a standardized test that is more aligned with the curriculum already taught in schools may decrease a portion of the racial and socioeconomic gaps present in current entrance exam scores.  
+
+*	Provide parents and students with better and more accessible information about schools and the admissions processes. Increasing school resources to provide on-demand preparation and coaching by school administrators could help increase diversity by incorporating students into the process who otherwise may not have applied to selective programs at all. Relying on parents and students to navigate a complex application process often shuts out disadvantaged students.  
+
+*	Increase access to advanced academic offerings. In cities like Baltimore, many students who attend middle schools in low-income areas do not have access to advanced or honors courses and are therefore disadvantaged in comparison to other students who can get a GPA boost from these higher-weighted courses. Expanding access to these programs throughout all middle schools could help level the GPA distribution so that not only students who attend middle schools in affluent areas can achieve highly-weighted GPAs. (Obviously this has advantages well beyond SHS admissions).  
+
+*	Provide extra learning opportunities for less advantaged students. Boston, for example, has instituted the Exam School Initiative, a summer and fall ISEE-prep program for children from underserved areas and has expanded enrollment from 450 to 750.  
+
+With these proposals, the demand remains for admitting students to these prestigious high schools. Here is how applicants are accepted:  
+
+> Admission to the specialized schools is based strictly on the SHSAT, which students can choose to take in the fall of 8th grade. On exam day, applicants submit a ranking of their preferred specialized high schools, up to a total of eight. SHSAT scores are sorted from highest to lowest and students are assigned, in order, to the highest-ranked school on their list with seats available (Abdulkadiroğlu et al., 2014; Dobbie & Fryer, 2014; NYC DOE, 2014). Accordingly, cut scores for admission vary by school and year depending on the distribution of scores in that year, student preferences, and the number of seats. Cut scores are not made public, but there is a well-known hierarchy of selectivity, with Stuyvesant requiring the highest SHSAT score, followed by Bronx Science and Brooklyn Tech (Abdulkadiroğlu et al., 2014; Feinman, 2008).^[https://nyuscholars.nyu.edu/en/publications/pathways-to-an-elite-education-exploring-strategies-to-diversity-]  
+
+Regardless of how public policies are implemented, the lack of diversity in NYC's Specialized High Schools will require a holistic approach that addresses years of district resource disparity and the city's Gifted & Talented program.
+
+
+# Methodology  
+
+## Exploratory Data Analysis  
+For the exploratory data analysis, I decided early to create maps that would help me grapple with the location of middle schools and their SHSAT performance. The following were coded in Python and R using `Plotly` and `Shiny` libraries. The purpose of these apps were to provide a visualization of the data. When viewing the apps, you will need an active internet connection. As you interact, observe the concentration of offers in specific districts.  
+
+* [SHSAT Plotly App](https://sslee-specializedhs.azurewebsites.net/)
+* [SHSAT Shiny App](https://logicalschema.shinyapps.io/NYC_DOE_SHSAT/)
+
+![https://logicalschema.shinyapps.io/NYC_DOE_SHSAT/](https://github.com/logicalschema/spring2022/raw/main/data698/data/shiny.png)  
+***
+
+![https://sslee-specializedhs.azurewebsites.net/](https://github.com/logicalschema/spring2022/raw/main/data698/data/plotly.png)  
+
+
+***  
+
+The following code sets up necessary libraries and a function for plotting graphs.  
+
+
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(dplyr)
 library(sigr)
@@ -99,49 +149,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 ```
 
-# Literature Review  
-The SHSAT and the lack of diversity in NYC Specialized High Schools have been a source of incredible controversy for the past number of years. Different politicians and activists have advocated for various approaches to the lack of diversity in NYC's Specialized High Schools. Here is a quote from the Brookings Institution's [article](https://www.brookings.edu/research/elite-or-elitist-lessons-for-colleges-from-selective-high-schools/) "Elite of elitist? Lessons for colleges from selective high schools":  
 
-> The question underlying these debates is: what constitutes fair admissions criteria? Supporters of a narrowly meritocratic approach argue it is unfair to deny, say, an Asian-American student a seat in one of these prestigious schools, in favor of, say, a Black student who scored lower on the test. Those who support a more inclusive policy argue that it is fairer to take into account socioeconomic and/or racial background in making admissions decisions.^[https://www.brookings.edu/research/elite-or-elitist-lessons-for-colleges-from-selective-high-schools/]  
-
-> While the SHS in some cities (Milwaukee, Philadelphia) are more representative of the demographics of their overall districts, disparities exist throughout each of the SHS systems. Some cities—particularly Boston and New York—have the least representative SHS student populations in terms of race, while others such as Baltimore, Louisville, and DC face greater challenges in terms of economic representation. 
-
-Attempts have been made to provide greater access for underrepresented groups, here is a quote from the same article:  
-> There are more modest efforts underway to improve representation in New York’s SHS, however. The Discovery program offers a summer enrichment program for eligible students who take the SHSAT and score just below the cutoff. To be eligible for Discovery, students must be from a low-income household, have scored within a certain range below the cutoff score, and attend a high-poverty high school. Students who participate and complete the program requirements are then admitted to one of the specialized high schools. By the summer of 2020, 20 percent of seats at each specialized high school will be reserved for Discovery program participants. However, the impact on racial diversity is likely to be muted. More than half of the school places offered to Discovery participants in 2019 went to Asian American students.  
-
-Here are some of the proposals:
-*	Require all students to take the entrance exams for selective high schools. Currently, there are many gaps in the racial and socioeconomic makeup of the students who choose to take the admissions exams in the first place. These gaps may be due to a lack of sufficient information within households, or other barriers, such as limited transportation to the testing location. Instituting a school day in which the entrance exam is administered to all middle school students may increase the number of students with qualifying scores from diverse backgrounds.  
-
-*	Replace the unique tests schools use for admission with scores on state or national tests. Many selective high school entrance exams, including the ISEE in Boston and the SHSAT in New York, test students on curriculum that has not yet been taught in school. As a result, the students who perform best on the exam often are those who had access to prep courses or tutoring. In Boston, many Black, Hispanic, and low-income students perform well on the fifth-grade standardized test, but just a year later do not score well on the ISEE exam. This suggests that using a standardized test that is more aligned with the curriculum already taught in schools may decrease a portion of the racial and socioeconomic gaps present in current entrance exam scores.  
-
-*	Provide parents and students with better and more accessible information about schools and the admissions processes. Increasing school resources to provide on-demand preparation and coaching by school administrators could help increase diversity by incorporating students into the process who otherwise may not have applied to selective programs at all. Relying on parents and students to navigate a complex application process often shuts out disadvantaged students.  
-
-*	Increase access to advanced academic offerings. In cities like Baltimore, many students who attend middle schools in low-income areas do not have access to advanced or honors courses and are therefore disadvantaged in comparison to other students who can get a GPA boost from these higher-weighted courses. Expanding access to these programs throughout all middle schools could help level the GPA distribution so that not only students who attend middle schools in affluent areas can achieve highly-weighted GPAs. (Obviously this has advantages well beyond SHS admissions).  
-
-*	Provide extra learning opportunities for less advantaged students. Boston, for example, has instituted the Exam School Initiative, a summer and fall ISEE-prep program for children from underserved areas and has expanded enrollment from 450 to 750.  
-
-With these proposals, the demand remains for admitting students to these prestigious high schools. Here is how applicants are accepted:  
-
-> Admission to the specialized schools is based strictly on the SHSAT, which students can choose to take in the fall of 8th grade. On exam day, applicants submit a ranking of their preferred specialized high schools, up to a total of eight. SHSAT scores are sorted from highest to lowest and students are assigned, in order, to the highest-ranked school on their list with seats available (Abdulkadiroğlu et al., 2014; Dobbie & Fryer, 2014; NYC DOE, 2014). Accordingly, cut scores for admission vary by school and year depending on the distribution of scores in that year, student preferences, and the number of seats. Cut scores are not made public, but there is a well-known hierarchy of selectivity, with Stuyvesant requiring the highest SHSAT score, followed by Bronx Science and Brooklyn Tech (Abdulkadiroğlu et al., 2014; Feinman, 2008).^[https://nyuscholars.nyu.edu/en/publications/pathways-to-an-elite-education-exploring-strategies-to-diversity-]  
-
-Regardless of how public policies are implemented, the lack of diversity in NYC's Specialized High Schools will require a holistic approach that addresses years of district resource disparity and the city's Gifted & Talented program.
-
-
-# Methodology  
-
-## Exploratory Data Analysis  
-For the exploratory data analysis, I decided early to create maps that would help me grapple with the location of middle schools and their SHSAT performance. The following were coded in Python and R using `Plotly` and `Shiny` libraries. The purpose of these apps were to provide a visualization of the data. When viewing the apps, you will need an active internet connection. As you interact, observe the concentration of offers in specific districts.  
-
-* [SHSAT Plotly App](https://sslee-specializedhs.azurewebsites.net/)
-* [SHSAT Shiny App](https://logicalschema.shinyapps.io/NYC_DOE_SHSAT/)
-
-![https://logicalschema.shinyapps.io/NYC_DOE_SHSAT/](https://github.com/logicalschema/spring2022/raw/main/data698/data/shiny.png)  
-***
-
-![https://sslee-specializedhs.azurewebsites.net/](https://github.com/logicalschema/spring2022/raw/main/data698/data/plotly.png)  
-
-
-***
 
 
 
@@ -229,8 +237,8 @@ schools2021 <- model_data[model_data$year == 2021, ]
 
 #### 2018  
 
-```{r}
-print(dfSummary(schools2018, graph.magnif=0.75), method="render")
+```{r, echo=FALSE}
+print(dfSummary(schools2018, graph.magnif=0.75), headings=FALSE, method="render")
 ```
 
 ```{r}
@@ -262,8 +270,8 @@ ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
 
 #### 2019  
 
-```{r}
-print(dfSummary(schools2019, graph.magnif=0.75), method="render")
+```{r, echo=FALSE}
+print(dfSummary(schools2019, graph.magnif=0.75), headings=FALSE, method="render")
 ```  
 
 ```{r}
@@ -292,8 +300,8 @@ ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
 
 #### 2020  
 
-```{r}
-print(dfSummary(schools2020, graph.magnif=0.75), method="render")
+```{r, echo=FALSE}
+print(dfSummary(schools2020, graph.magnif=0.75), headings=FALSE, method="render")
 ```  
 
 ```{r}
@@ -322,8 +330,8 @@ ggcorr(schools2021[, c(5,7,8,9,10,11,12,13,14,15,16)], label = T, hjust= 0.9)
 
 #### 2021  
 
-```{r}
-print(dfSummary(schools2021, graph.magnif=0.75), method="render")
+```{r, echo=FALSE}
+print(dfSummary(schools2021, graph.magnif=0.75), headings=FALSE, method="render")
 ```  
 
 ```{r}
@@ -357,7 +365,7 @@ After EDA, I will split the data into test and training partitions, this section
 
 
 ```{r}
-set.seed(422)
+set.seed(505)
 data_split <- initial_split(model_data, prop = 0.8, strata = district)
 schools_train <- training(data_split)
 schools_test <- testing(data_split)
