@@ -66,6 +66,32 @@ For the exploratory data analysis, I decided early to create maps that would hel
 ***
 
 ![https://sslee-specializedhs.azurewebsites.net/](https://github.com/logicalschema/spring2022/raw/main/data698/data/plotly.png)  
+***  
+
+Data Dictionary  
+
+The following is a brief description for the variables used in this research paper.  
+
+
+Variable | Description  
+---------|-------------------
+accessibility | Accessibility of the site where the school is located: Functionally Accessible or Not Functionally Accessible
+address | Primary Street Address
+coursepassrate | Percent of students who passed core courses
+district | District is a code which reflects where the school is located.
+dual_program | If the school has a dual language program
+elaprof | Percent of students proficient in ELA
+mathprof | Percent of students proficient in math
+name | School's name
+offers_count | The number of students from the middle school who received an offer to a Specialized High School
+schooldbn | Unique identifier for each NYC public school.
+shsat_prep | If the school listed a SHSAT prep program for
+student_count | Number of 8th grade students from the middle school who applied to high school
+surveysafety | Percent of students that felt safe in the hallways, bathrooms, locker rooms, and cafeteria
+testers_count | The number of students from the middle school who took the SHSAT
+
+
+
 
 
 ***  
@@ -160,7 +186,7 @@ The following code imports the csv files from GitHub. The csv files were cleaned
 * `shsat_prep` identifies if the school has a program to prep for the SHSAT with a value of 0 or 1  
 
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 # School information: Note: only 2018-2021 are available
 school_info <- read_csv('https://raw.githubusercontent.com/logicalschema/spring2022/main/data698/data/2018-2021_school_information.csv')
 
@@ -373,7 +399,7 @@ schools_test <- testing(data_split)
 ```  
 
 ## Decision Tree  
-The following creates training and testing partitions for the data and constructs a decision tree. From the correlation plot, I decided to use `offers_count ~ dual_program  + shsat_prep + testers_count + student_count + elaprof + mathprof + coursepassrate`.  
+The following creates training and testing partitions for the data and constructs a decision tree. From the correlation plot, I decided to use `offers_count ~ dual_program + shsat_prep + testers_count + student_count + elaprof + mathprof + coursepassrate`.  
 
 The following code creates the decision tree.
 
@@ -526,7 +552,7 @@ The third model attempts to compensate for an excessive number of zeroes. A zero
 # Zero Inflation test for glm_second_model
 check_zeroinflation(glm_second_model)
 
-zip_model <- zeroinfl(offers_count  ~ testers_count + coursepassrate + elaprof + mathprof + surveysafety, data = schools_train)
+zip_model <- zeroinfl(offers_count  ~ testers_count + student_count + elaprof + mathprof + coursepassrate, data = schools_train)
 
 summary(zip_model)  
 
@@ -562,9 +588,9 @@ The mean absolute error of the second model is **`r third_mae`**.
 The second model's RMSE is `r third_rmse `
 
 
-
 ## Comparison of AIC Measures  
 
+The following is a comparison of the three models that were created in terms of AIC. Note for Quasi-Poisson regressions there is no AIC reported. 
 
 ```{r}
 AIC(first_model, glm_second_model, zip_model)
@@ -572,14 +598,58 @@ AIC(first_model, glm_second_model, zip_model)
 ```
 
 
-
 # Results  
+
+For the models, the Zero-Inflated Poisson regression model provided the best results. A refinement of the second model, the third model has the lowest mean absolute error (MAE) and root mean square error (RMSE). From the summary of this model, besides the number of testers for the SHSAT, the variables `elaprof` and `mathprof` were significant. The percentage of students proficient in ELA and math for middle schools appears to have a correlation with the number of offers for Specialized High Schools in terms of the SHSAT.
 
 
 # Summary  
 
+Proficiency in ELA and math proved to be significant factors for middle school student populations in receiving offers to Specialized High Schools. Because the SHSAT is a standardized exam, it is possible that this test merely reinforces the need to improve proficiency for NY State exams. The presence of scarce SHSAT preparatory or dual language programs at middle schools did not appear to have a strong correlation with the number of offers.  
+
+Overall, from this study, I would recommend for additional aid for improving NYS proficiency in ELA and math for all students. This study did not examine the racial demographic of students. However, in future studies, I would encourage that such demographics be ignored and that researchers look at NYS proficiency rates. In addition, as these rates are examined, I would recommend researchers look at the impact of the city's Gifted & Talented programs. Because lack of diversity is a problem in Specialized High Schools, additional research needs to examine diversity in the early childhood education, specifically the Gifted & Talented programs. Further study should also examine SHSAT awareness in minority communities: perhaps, lack of participation is another inhibiting factor for lack of diversity.
+
+An additional recommendation would be to consider providing additional resources for SHSAT preparation. Perhaps lack of quality test prep programs would provide students the opportunity to catch up to NYS proficiency standards. 
+
 
 # Appendix
+
+## Code  
+
+The code used for this project can be found at these locations:  
+
+* GitHub for Project: [https://github.com/logicalschema/spring2022/tree/main/data698](https://github.com/logicalschema/spring2022/tree/main/data698)  
+* GitHub for Shiny App: [https://github.com/logicalschema/spring2022/tree/main/data698/shinyapp/NYC_DOE_SHSAT](https://github.com/logicalschema/spring2022/tree/main/data698/shinyapp/NYC_DOE_SHSAT)  
+* GitHub for Python App: [https://github.com/logicalschema/specialized-hs](https://github.com/logicalschema/specialized-hs)  
+
+## Links  
+
+* [Plotly App](https://sslee-specializedhs.azurewebsites.net/)  
+* [Shiny App](https://logicalschema.shinyapps.io/NYC_DOE_SHSAT/)  
+* [RPubs Site](https://rpubs.com/logicalschema/data698)  
+
+
+## Bibliography    
+
+Almarode, Subotnik, R., & Lee, G. M. (2016). What Works: Lessons From a Research Study of Specialized Science High School Graduates. Gifted Child Today Magazine, 39(4), 185–190. https://doi.org/10.1177/1076217516662096  
+
+Chang, W. (2013, January 1). Cookbook for R. Retrieved April 5, 2022, from http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/  
+
+Corcoran, S., & Baker-Smith, C. (2015). Pathways to an Elite Education: Exploring Strategies to Diversity NYC's Specialized High Schools. Institute for Education and Social Policy, and Research Alliance for New York City Schools.
+
+Fadilla, & Usmeldi. (2020). Preliminary study for development of teacher’s Books oriented research-based learning on science lesson in Junior High School. Journal of Physics. Conference Series, 1481(1). https://doi.org/10.1088/1742-6596/1481/1/012068  
+
+Nwanganga, Fred; Chapple, Mike. Practical Machine Learning in R (Kindle Locations 3605-3681). Wiley. Kindle Edition. 
+
+Reeves, Richard V., and Ashley Schobert. “Elite or Elitist? Lessons for Colleges from Selective High Schools.” Brookings, Brookings, 9 Mar. 2022, https://www.brookings.edu/research/elite-or-elitist-lessons-for-colleges-from-selective-high-schools/. 
+
+Taylor, Jonathan James, "Policy Implications of a Predictive Validity Study of the Specialized High School Admissions Test at Three Elite New York City High Schools" (2015). CUNY Academic Works.
+https://academicworks.cuny.edu/gc_etds/1154  
+
+Waran, R. (2021, June 17). Deploying dash apps on azure with windows. Resonance Analytics. Retrieved March, 2022, from https://resonance-analytics.com/blog/deploying-dash-apps-on-azure 
+
+Wickham, Hadley; Grolemund, Garrett. R for Data Science . O'Reilly Media. Kindle Edition. 
+
 
 
 
