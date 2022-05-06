@@ -38,6 +38,7 @@ library(GGally)
 library(summarytools)
 library(MASS)
 library(AER)
+library(Metrics)
 
 # Used for zero-inflation model
 library(pscl)
@@ -394,22 +395,27 @@ After building the decision tree model based upon the variables, we will take th
 ```{r}
 # Declare Mean Absolute Error function
 MAE <- function(actual, predicted){
-  mean(abs(actual - predicted))
+  return(mean(abs(actual - predicted)))
 }
 
-
 # Generate the predictions using the test data
-predictions <- predict(model, new_data = schools_test) 
-
-# Truncate the predictions
-predictions$.pred <- trunc(predictions$.pred)
+schools_test$dt_model <- (predict(model, new_data = schools_test))$.pred
 
 # Calculate the mean absolute error
-mae_decisiontree_model <- MAE(schools_test$offers_count, predictions$.pred)
+mae_decisiontree_model <- MAE(schools_test$offers_count, schools_test$dt_model)
+
+
+# Calculate the RMSE
+decisiontree_rmse <- schools_test %>% 
+  mutate(residual = dt_model - offers_count) %>%
+  summarize(rmse  = sqrt(mean(residual^2)))
 
 ```  
 
-The mean absolute error of the decision tree is **`r mae_decisiontree_model`**. The two features of `dual_program` and `shsat_prep` were removed because they had a negligible correlation measure.  
+The mean absolute error of the decision tree is **`r mae_decisiontree_model`**.  
+The RMSE of the decision tree is `r decisiontree_rmse`. 
+
+The two features of `dual_program` and `shsat_prep` were removed because they had a negligible correlation measure.  
 
 
 ## First Model  
@@ -445,12 +451,17 @@ GainCurvePlot(
   "First Model")
 
 
+first_mae <- MAE(schools_test$offers_count, schools_test$p1)
+
+
 # Calculate the RMSE
 first_rmse <- schools_test %>% 
   mutate(residual = p1 - offers_count) %>%
   summarize(rmse  = sqrt(mean(residual^2)))
 
 ```  
+
+The mean absolute error of the first model is **`r first_mae`**.  
 The first model's RMSE is `r first_rmse `
 
 ***
@@ -468,6 +479,11 @@ summary(glm_second_model)
 
 ## Create the prediction column based on the model
 schools_test$p2 <- predict(glm_second_model, newdata=schools_test)
+
+
+# Calculate the MAE
+second_mae <- MAE(schools_test$offers_count, schools_test$p2)
+
 
 # Calculate the RMSE
 second_rmse <- schools_test %>% 
@@ -488,9 +504,14 @@ GainCurvePlot(
 
 ```  
 
+The mean absolute error of the second model is **`r second_mae`**.  
 The second model's RMSE is `r second_rmse `
 
 ***
+
+## Third Model  
+
+The third model attempts to compensate for an excessive number of zeroes. A zero-inflation test is performed on the second model to see if this is the case. This model will employ zero-inflation regression.  
 
 ```{r}
 
@@ -499,15 +520,48 @@ check_zeroinflation(glm_second_model)
 
 zip_model <- zeroinfl(offers_count  ~ testers_count + coursepassrate + elaprof + mathprof + surveysafety, data = schools_train)
 
-summary(zip_model)
+summary(zip_model)  
+
+
+## Create the prediction column based on the model
+schools_test$p3 <- predict(zip_model, newdata=schools_test)
+
+
+# Calculate the MAE
+third_mae <- MAE(schools_test$offers_count, schools_test$p3)
+
+
+# Calculate the RMSE
+third_rmse <- schools_test %>% 
+  mutate(residual = p3 - offers_count) %>%
+  summarize(rmse  = sqrt(mean(residual^2)))
+
+# Plot predictions vs cnt (pred on x-axis)
+ggplot(schools_test, aes(x = p3, y = offers_count)) +
+  geom_point() + 
+  geom_abline(color = "darkblue")
+
+## 
+GainCurvePlot(
+  schools_test,
+  "p3",
+  "offers_count",
+  "Third Model")
+
 ```  
+
+The mean absolute error of the second model is **`r third_mae`**.  
+The second model's RMSE is `r third_rmse `
+
+
+
+## Comparison of AIC Measures  
 
 
 ```{r}
 AIC(first_model, glm_second_model, zip_model)
-```
 
-## Correlation
+```
 
 
 
