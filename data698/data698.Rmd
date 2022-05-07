@@ -624,6 +624,7 @@ The code used for this project can be found at these locations:
 
 ## Links  
 
+* [YouTube Presentation](https://youtu.be/DoopFVvXSMU)
 * [Plotly App](https://sslee-specializedhs.azurewebsites.net/)  
 * [Shiny App](https://logicalschema.shinyapps.io/NYC_DOE_SHSAT/)  
 * [RPubs Site](https://rpubs.com/logicalschema/data698)  
